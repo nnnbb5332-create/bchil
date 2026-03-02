@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        android:backgroundTint="@color/gray"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/child_login_title"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_color"
+        android:layout_marginTop="32dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/child_password_info"
+        android:textSize="14sp"
+        android:textColor="@color/gray"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/passwordInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/child_password_hint"
+        android:inputType="textPassword"
+        android:layout_marginTop="24dp"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:textColor="@color/text_color"
+        android:textColorHint="@color/hint_color"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        android:letterSpacing="0.5" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_button"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/green"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+</LinearLayout>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">تطبيق مراقبة الطفل</string>
+    
+    <!-- Splash Screen -->
+    <string name="splash_title">تطبيق مراقبة الطفل</string>
+    <string name="splash_subtitle">اختر نمط الدخول</string>
+    <string name="parent_login">دخول ولي الأمر</string>
+    <string name="child_login">دخول الطفل</string>
+    
+    <!-- Parent Login -->
+    <string name="parent_login_title">دخول ولي الأمر</string>
+    <string name="email_hint">البريد الإلكتروني</string>
+    <string name="password_hint">كلمة المرور</string>
+    <string name="login_button">دخول</string>
+    <string name="back">رجوع</string>
+    
+    <!-- Child Login -->
+    <string name="child_login_title">دخول الطفل</string>
+    <string name="child_password_hint">كلمة المرور</string>
+    <string name="child_password_info">أدخل كلمة المرور التي أعطاك إياها ولي الأمر</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">لوحة التحكم</string>
+    <string name="add_child">إضافة طفل جديد</string>
+    <string name="no_children">لم يتم إضافة أطفال حتى الآن</string>
+    
+    <!-- Add Child -->
+    <string name="add_child_title">إضافة طفل جديد</string>
+    <string name="child_name_hint">اسم الطفل</string>
+    <string name="create_password">إنشاء كلمة مرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="add_button">إضافة</string>
+    
+    <!-- Messages -->
+    <string name="fill_all_fields">يرجى ملء جميع الحقول</string>
+    <string name="login_failed">فشل تسجيل الدخول</string>
+    <string name="login_success">تم تسجيل الدخول بنجاح</string>
+    <string name="monitoring_started">تم بدء المراقبة</string>
+    <string name="invalid_password">كلمة المرور غير صحيحة</string>
+    <string name="data_processing_error">خطأ في معالجة البيانات</string>
+    <string name="internet_error">تحقق من الاتصال بالإنترنت</string>
+    
+    <!-- Location -->
+    <string name="current_location">الموقع الحالي</string>
+    <string name="location_history">سجل المواقع</string>
+    <string name="latitude">خط العرض</string>
+    <string name="longitude">خط الطول</string>
+    
+    <!-- Battery -->
+    <string name="battery_level">مستوى البطارية</string>
+    <string name="battery_status">حالة البطارية</string>
+    
+    <!-- Apps -->
+    <string name="app_usage">استخدام التطبيقات</string>
+    <string name="most_used_apps">التطبيقات الأكثر استخداماً</string>
+    
+    <!-- Calls and Messages -->
+    <string name="calls">المكالمات</string>
+    <string name="messages">الرسائل</string>
+    <string name="whatsapp">الواتساب</string>
+    
+    <!-- Settings -->
+    <string name="settings">الإعدادات</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="about">حول التطبيق</string>
+</resources>

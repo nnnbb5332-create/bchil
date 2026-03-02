@@ -1,0 +1,32 @@
+workflows:
+  android-release:
+    name: Android Release Build
+    instance_type: mac_mini_m1
+    max_build_duration: 120
+    environment:
+      java: 17
+    triggering:
+      events:
+        - push
+    scripts:
+      - name: Set Java 17 and Android SDK
+        script: |
+          export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+          export PATH=$JAVA_HOME/bin:$PATH
+          java -version
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Build Release APK
+        script: |
+          export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+          export PATH=$JAVA_HOME/bin:$PATH
+          chmod +x gradlew
+          ./gradlew assembleRelease
+    artifacts:
+      - app/build/outputs/apk/release/app-release.apk
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: true
