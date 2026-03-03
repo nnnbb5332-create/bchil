@@ -59,7 +59,8 @@ class AddChildActivity : AppCompatActivity() {
             }
         }
 
-        val childPassword = String.format("%04d", Random.nextInt(10000))
+        // إنشاء رمز عشوائي (6 أحرف وأرقام)
+        val childPassword = generateRandomCode()
 
         isAdding = true
         binding.addButton.isEnabled = false
@@ -73,7 +74,7 @@ class AddChildActivity : AppCompatActivity() {
                 runOnUiThread {
                     isAdding = false
                     binding.addButton.isEnabled = true
-                    binding.addButton.text = "إضافة"
+                    binding.addButton.text = "إضافة الطفل"
 
                     try {
                         val data = response.getJSONObject("data")
@@ -88,31 +89,44 @@ class AddChildActivity : AppCompatActivity() {
                 runOnUiThread {
                     isAdding = false
                     binding.addButton.isEnabled = true
-                    binding.addButton.text = "إضافة"
+                    binding.addButton.text = "إضافة الطفل"
                     Toast.makeText(this, "فشل إضافة الطفل: $error", Toast.LENGTH_LONG).show()
                 }
             }
         )
     }
 
+    private fun generateRandomCode(): String {
+        // إنشاء رمز من 6 أحرف وأرقام
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return (1..6).map { chars.random() }.joinToString("")
+    }
+
     private fun showChildCodeDialog(childName: String, childPassword: String, childId: Int) {
+        // تحويل معرف الطفل إلى صيغة الرمز (مثال: 5 يصبح 05)
+        val childIdFormatted = String.format("%02d", childId)
+        val fullCode = childIdFormatted + childPassword
+
         val message = """
             تم إضافة $childName بنجاح!
             
-            معرف الطفل: $childId
-            رمز الدخول: $childPassword
+            رمز الدخول هو:
+            $fullCode
             
-            احفظ هذه البيانات جيداً!
-            سيقوم الطفل باستخدامها للدخول إلى التطبيق.
+            احفظ هذا الرمز جيداً!
+            سيقوم الطفل باستخدامه للدخول إلى التطبيق.
+            
+            الرمز يتكون من:
+            - أول رقمين: معرف الطفل
+            - باقي الأحرف: كلمة المرور
         """.trimIndent()
 
         val dialog = AlertDialog.Builder(this)
             .setTitle("تم إضافة الطفل")
             .setMessage(message)
-            .setPositiveButton("نسخ البيانات") { _, _ ->
-                val text = "معرف الطفل: $childId\nرمز الدخول: $childPassword"
-                copyToClipboard(text)
-                Toast.makeText(this, "تم نسخ البيانات", Toast.LENGTH_SHORT).show()
+            .setPositiveButton("نسخ الرمز") { _, _ ->
+                copyToClipboard(fullCode)
+                Toast.makeText(this, "تم نسخ الرمز", Toast.LENGTH_SHORT).show()
                 finish()
             }
             .setNegativeButton("إغلاق") { _, _ ->
@@ -126,7 +140,7 @@ class AddChildActivity : AppCompatActivity() {
 
     private fun copyToClipboard(text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("بيانات الطفل", text)
+        val clip = ClipData.newPlainText("رمز الطفل", text)
         clipboard.setPrimaryClip(clip)
     }
 }

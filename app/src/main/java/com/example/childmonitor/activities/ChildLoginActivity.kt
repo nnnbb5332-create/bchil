@@ -32,28 +32,35 @@ class ChildLoginActivity : AppCompatActivity() {
     }
 
     private fun attemptLogin() {
-        val childIdStr = binding.childIdInput.text.toString().trim()
-        val password = binding.codeInput.text.toString().trim()
+        val code = binding.codeInput.text.toString().trim().uppercase()
 
+        // التحقق من صحة الرمز
         when {
-            childIdStr.isEmpty() -> {
-                binding.childIdInput.error = "الرجاء إدخال معرف الطفل"
-                binding.childIdInput.requestFocus()
+            code.isEmpty() -> {
+                binding.codeInput.error = "الرجاء إدخال الرمز"
+                binding.codeInput.requestFocus()
                 return
             }
-            password.isEmpty() -> {
-                binding.codeInput.error = "الرجاء إدخال رمز الدخول"
+            code.length != 6 -> {
+                binding.codeInput.error = "الرمز يجب أن يكون 6 أحرف"
                 binding.codeInput.requestFocus()
                 return
             }
         }
 
-        val childId = try {
-            childIdStr.toInt()
-        } catch (e: Exception) {
-            Toast.makeText(this, "معرف الطفل يجب أن يكون رقماً", Toast.LENGTH_LONG).show()
+        // تحليل الرمز: أول رقم = معرف الطفل، بقية الأرقام = كلمة المرور
+        // مثال: "001234" = معرف الطفل 1، كلمة المرور 1234
+        val childIdStr = code.substring(0, 2).toIntOrNull()
+        val password = code.substring(2)
+
+        if (childIdStr == null || childIdStr == 0) {
+            Toast.makeText(this, "الرمز غير صحيح", Toast.LENGTH_LONG).show()
+            binding.codeInput.text?.clear()
+            binding.codeInput.requestFocus()
             return
         }
+
+        val childId = childIdStr
 
         isLoggingIn = true
         binding.loginButton.isEnabled = false
@@ -100,7 +107,7 @@ class ChildLoginActivity : AppCompatActivity() {
 
                     if (error.contains("Invalid", ignoreCase = true) || 
                         error.contains("UNAUTHORIZED", ignoreCase = true)) {
-                        Toast.makeText(this, "معرف الطفل أو رمز الدخول غير صحيح", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "الرمز غير صحيح أو غير موجود", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(this, "فشل تسجيل الدخول: $error", Toast.LENGTH_LONG).show()
                     }
