@@ -29,6 +29,7 @@ jobs:
         mkdir -p app/src/main/res/mipmap-xxhdpi
         mkdir -p app/src/main/res/mipmap-xxxhdpi
         
+        # Create ic_launcher_foreground.xml
         cat > app/src/main/res/drawable/ic_launcher_foreground.xml << 'XMLEOF'
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -36,10 +37,16 @@ jobs:
             android:height="108dp"
             android:viewportWidth="108"
             android:viewportHeight="108">
-          <path android:fillColor="#26A69A" android:pathData="M0,0h108v108h-108z"/>
+            <path
+                android:fillColor="#2196F3"
+                android:pathData="M54,20C40.75,20 30,30.75 30,44C30,57.25 40.75,68 54,68C67.25,68 78,57.25 78,44C78,30.75 67.25,20 54,20ZM54,60C45.16,60 38,52.84 38,44C38,35.16 45.16,28 54,28C62.84,28 70,35.16 70,44C70,52.84 62.84,60 54,60Z"/>
+            <path
+                android:fillColor="#1976D2"
+                android:pathData="M54,36C49.58,36 46,39.58 46,44C46,48.42 49.58,52 54,52C58.42,52 62,48.42 62,44C62,39.58 58.42,36 54,36Z"/>
         </vector>
         XMLEOF
         
+        # Create ic_launcher_background.xml
         cat > app/src/main/res/drawable/ic_launcher_background.xml << 'XMLEOF'
         <?xml version="1.0" encoding="utf-8"?>
         <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -47,25 +54,57 @@ jobs:
             android:height="108dp"
             android:viewportWidth="108"
             android:viewportHeight="108">
-          <path android:fillColor="#3DDC84" android:pathData="M0,0h108v108h-108z"/>
+            <path android:fillColor="#FFFFFF" android:pathData="M0,0h108v108h-108z"/>
         </vector>
         XMLEOF
         
+        # Create circle_background.xml
+        cat > app/src/main/res/drawable/circle_background.xml << 'XMLEOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <solid android:color="#E0E0E0" />
+        </shape>
+        XMLEOF
+        
+        # Create edit_text_background.xml
+        cat > app/src/main/res/drawable/edit_text_background.xml << 'XMLEOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#FFFFFF" />
+            <stroke android:width="1dp" android:color="#E0E0E0" />
+            <corners android:radius="4dp" />
+        </shape>
+        XMLEOF
+        
+        # Create simple PNG icons using Python
         python3 << 'PYEOF'
         import base64
-        png_data = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" )
-        for path in ['app/src/main/res/mipmap-mdpi/ic_launcher.png', 'app/src/main/res/mipmap-hdpi/ic_launcher.png', 'app/src/main/res/mipmap-xhdpi/ic_launcher.png', 'app/src/main/res/mipmap-xxhdpi/ic_launcher.png', 'app/src/main/res/mipmap-xxxhdpi/ic_launcher.png']:
-            with open(path, 'wb') as f:
+        # Simple 1x1 transparent PNG
+        png_data = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==")
+        for density in ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']:
+            with open(f'app/src/main/res/mipmap-{density}/ic_launcher.png', 'wb') as f:
+                f.write(png_data)
+            with open(f'app/src/main/res/mipmap-{density}/ic_launcher_round.png', 'wb') as f:
                 f.write(png_data)
         PYEOF
 
     - name: Make gradlew executable
       run: chmod +x gradlew
 
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
+
     - name: Build Release APK
       run: ./gradlew assembleRelease --stacktrace
 
-    - name: Upload APK to Artifacts
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug-apk
+        path: app/build/outputs/apk/debug/*.apk
+
+    - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release-apk
@@ -75,7 +114,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: app/build/outputs/apk/release/*.apk
+        files: |
+          app/build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/release/*.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
