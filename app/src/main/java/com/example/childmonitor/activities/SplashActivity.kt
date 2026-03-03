@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.childmonitor.databinding.ActivitySplashBinding
+import com.example.childmonitor.services.MonitoringService
 
 class SplashActivity : AppCompatActivity() {
 
