@@ -1,71 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
+    android:fillViewport="true"
     android:background="@color/white">
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/back"
-        android:backgroundTint="@color/gray"
-        android:textColor="@color/white" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_child_title"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_color"
-        android:layout_marginTop="32dp" />
-
-    <EditText
-        android:id="@+id/childNameInput"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/child_name_hint"
-        android:layout_marginTop="24dp"
-        android:padding="12dp"
-        android:background="@drawable/edit_text_background"
-        android:textColor="@color/text_color"
-        android:textColorHint="@color/hint_color" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/passwordInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/create_password"
-        android:inputType="textPassword"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:background="@drawable/edit_text_background"
-        android:textColor="@color/text_color"
-        android:textColorHint="@color/hint_color" />
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:backgroundTint="@color/gray"
+            android:textColor="@color/white" />
 
-    <EditText
-        android:id="@+id/confirmPasswordInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/confirm_password"
-        android:inputType="textPassword"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
-        android:background="@drawable/edit_text_background"
-        android:textColor="@color/text_color"
-        android:textColorHint="@color/hint_color" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="إضافة طفل جديد"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_color"
+            android:layout_marginTop="32dp"
+            android:layout_gravity="center_horizontal" />
 
-    <Button
-        android:id="@+id/addButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_button"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="@color/green"
-        android:textColor="@color/white"
-        android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="أدخل اسم الطفل وسيتم إنشاء رمز فريد له"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center" />
 
-</LinearLayout>
+        <!-- اسم الطفل -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="اسم الطفل"
+            android:textSize="14sp"
+            android:textColor="@color/text_color"
+            android:layout_marginTop="48dp" />
+
+        <EditText
+            android:id="@+id/childNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="مثال: أحمد"
+            android:inputType="textPersonName"
+            android:layout_marginTop="8dp"
+            android:padding="16dp"
+            android:background="@drawable/edit_text_background"
+            android:textColor="@color/text_color"
+            android:textColorHint="@color/hint_color" />
+
+        <!-- معلومات -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardBackgroundColor="@color/light_gray"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ماذا سيحدث؟"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="• سيتم إنشاء رمز فريد مكون من 6 أحرف\n• سيعطى الرمز للطفل لاستخدامه في الدخول\n• يمكنك رؤية الرمز مرة أخرى من لوحة التحكم"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="8dp"
+                    android:lineSpacingMultiplier="1.3" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- زر الإضافة -->
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="إضافة الطفل"
+            android:layout_marginTop="32dp"
+            android:padding="16dp"
+            android:backgroundTint="@color/green"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</ScrollView>

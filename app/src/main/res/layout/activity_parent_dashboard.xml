@@ -1,51 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background_color">
 
-    <FrameLayout
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/blue">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/welcomeText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="لوحة التحكم"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="خروج"
+                android:backgroundTint="@color/red"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- المحتوى -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- عدد الأطفال -->
         <TextView
+            android:id="@+id/childrenCountText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dashboard_title"
-            android:textSize="18sp"
+            android:text="عدد الأطفال: 0"
+            android:textSize="16sp"
+            android:textColor="@color/text_color"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- قائمة الأطفال -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/childrenRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:visibility="gone" />
+
+        <!-- رسالة لا يوجد أطفال -->
+        <LinearLayout
+            android:id="@+id/noChildrenText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_launcher_foreground"
+                android:alpha="0.5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="لم يتم إضافة أطفال بعد"
+                android:textSize="18sp"
+                android:textColor="@color/gray"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="اضغط الزر أدناه لإضافة طفل جديد"
+                android:textSize="14sp"
+                android:textColor="@color/hint_color"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- زر إضافة طفل -->
+        <Button
+            android:id="@+id/addChildButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+ إضافة طفل جديد"
+            android:layout_marginTop="16dp"
+            android:padding="16dp"
+            android:backgroundTint="@color/green"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:layout_gravity="center" />
-    </FrameLayout>
+            android:textSize="16sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/childrenRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp" />
-
-    <TextView
-        android:id="@+id/noChildrenText"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="@string/no_children"
-        android:textSize="16sp"
-        android:textColor="@color/gray"
-        android:gravity="center"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/addChildButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_child"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/green"
-        android:textColor="@color/white"
-        android:textStyle="bold" />
-
+    </LinearLayout>
 </LinearLayout>

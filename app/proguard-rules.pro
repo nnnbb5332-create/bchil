@@ -1,39 +1,32 @@
-# Proguard rules for Child Monitor App
+# ProGuard rules for Child Monitor App
 
-# Keep all classes in our app package
--keep class com.example.childmonitor.** { *; }
+# Keep DatabaseHelper and its inner classes
+-keep class com.example.childmonitor.database.DatabaseHelper { *; }
+-keep class com.example.childmonitor.database.DatabaseHelper$* { *; }
 
-# Keep Google Play Services
--keep class com.google.android.gms.** { *; }
+# Keep Activities
+-keep class com.example.childmonitor.activities.** { *; }
 
-# Keep OkHttp
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
+# Keep Services
+-keep class com.example.childmonitor.services.** { *; }
 
-# Keep Gson
--keep class com.google.gson.** { *; }
+# Keep Receivers
+-keep class com.example.childmonitor.receivers.** { *; }
 
-# Keep Room
--keep class androidx.room.** { *; }
+# Keep Monitoring classes
+-keep class com.example.childmonitor.monitoring.** { *; }
 
-# Keep WorkManager
--keep class androidx.work.** { *; }
+# Keep BCrypt
+-keep class org.mindrot.jbcrypt.BCrypt { *; }
 
-# Keep Android X
--keep class androidx.** { *; }
+# Room
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.room.paging.**
 
-# Keep native methods
--keepclasseswithmembernames class * {
-    native <methods>;
-}
-
-# Keep enums
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
-# Keep Parcelable implementations
--keep class * implements android.os.Parcelable {
-    public static final android.os.Parcelable$Creator *;
-}
+# General
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod

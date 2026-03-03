@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:gravity="center"
+    android:padding="24dp"
     android:background="@color/white">
 
     <Button
@@ -12,48 +13,78 @@
         android:layout_height="wrap_content"
         android:text="@string/back"
         android:backgroundTint="@color/gray"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:layout_gravity="start" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:layout_marginTop="48dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/child_login_title"
-        android:textSize="24sp"
+        android:text="دخول الطفل"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="@color/text_color"
-        android:layout_marginTop="32dp" />
+        android:layout_marginTop="24dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/child_password_info"
+        android:text="أدخل الرمز الذي أعطاك إياه ولي أمرك"
         android:textSize="14sp"
         android:textColor="@color/gray"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="8dp"
+        android:textAlignment="center" />
+
+    <!-- حقل إدخال الرمز -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="الرمز السري"
+        android:textSize="14sp"
+        android:textColor="@color/text_color"
+        android:layout_marginTop="48dp" />
 
     <EditText
-        android:id="@+id/passwordInput"
+        android:id="@+id/codeInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/child_password_hint"
-        android:inputType="textPassword"
-        android:layout_marginTop="24dp"
-        android:padding="12dp"
+        android:hint="XXXXXX"
+        android:inputType="textCapCharacters|textNoSuggestions"
+        android:maxLength="6"
+        android:layout_marginTop="8dp"
+        android:padding="16dp"
         android:background="@drawable/edit_text_background"
         android:textColor="@color/text_color"
         android:textColorHint="@color/hint_color"
         android:textAlignment="center"
-        android:textSize="32sp"
-        android:letterSpacing="0.5" />
+        android:textSize="24sp"
+        android:letterSpacing="0.3"
+        android:textAllCaps="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="الرمز يتكون من 6 أحرف وأرقام"
+        android:textSize="12sp"
+        android:textColor="@color/hint_color"
+        android:layout_marginTop="8dp" />
+
+    <!-- زر الدخول -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/login_button"
-        android:layout_marginTop="24dp"
+        android:text="دخول"
+        android:layout_marginTop="32dp"
+        android:padding="16dp"
         android:backgroundTint="@color/green"
         android:textColor="@color/white"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textSize="16sp" />
 
 </LinearLayout>
