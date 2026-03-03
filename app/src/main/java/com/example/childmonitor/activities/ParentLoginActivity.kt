@@ -5,23 +5,24 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.childmonitor.database.DatabaseHelper
 import com.example.childmonitor.databinding.ActivityParentLoginBinding
+import com.example.childmonitor.network.NetworkManager
 
 class ParentLoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityParentLoginBinding
-    private lateinit var dbHelper: DatabaseHelper
+    private val networkManager = NetworkManager.getInstance()
+    private var isLoggingIn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityParentLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        dbHelper = DatabaseHelper(this)
-
         binding.loginButton.setOnClickListener {
-            attemptLogin()
+            if (!isLoggingIn) {
+                attemptLogin()
+            }
         }
 
         binding.registerLink.setOnClickListener {
@@ -56,33 +57,66 @@ class ParentLoginActivity : AppCompatActivity() {
             }
         }
 
-        // محاولة تسجيل الدخول
-        val parent = dbHelper.loginParent(email, password)
-        
-        if (parent != null) {
-            Toast.makeText(this, "مرحباً ${parent.name}!", Toast.LENGTH_SHORT).show()
-            
-            // حفظ بيانات الجلسة
-            val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
-            sharedPref.edit().apply {
-                putLong("parent_id", parent.id)
-                putString("parent_email", parent.email)
-                putString("parent_name", parent.name)
-                putString("user_type", "parent")
-                apply()
+        // إرسال طلب الدخول إلى الخادم
+        isLoggingIn = true
+        binding.loginButton.isEnabled = false
+        binding.loginButton.text = "جاري الدخول..."
+
+        networkManager.loginParent(
+            email = email,
+            password = password,
+            onSuccess = { response ->
+                runOnUiThread {
+                    isLoggingIn = false
+                    binding.loginButton.isEnabled = true
+                    binding.loginButton.text = "دخول"
+
+                    try {
+                        val data = response.getJSONObject("data")
+                        val parentId = data.getInt("id")
+                        val parentEmail = data.getString("email")
+                        val parentName = data.optString("name", "")
+
+                        Toast.makeText(this, "تم تسجيل الدخول بنجاح!", Toast.LENGTH_LONG).show()
+
+                        // حفظ بيانات الجلسة
+                        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                        sharedPref.edit().apply {
+                            putInt("parent_id", parentId)
+                            putString("parent_email", parentEmail)
+                            putString("parent_name", parentName)
+                            putString("user_type", "parent")
+                            apply()
+                        }
+
+                        // الانتقال إلى لوحة التحكم
+                        val intent = Intent(this, ParentDashboardActivity::class.java).apply {
+                            putExtra("parent_id", parentId)
+                            putExtra("parent_email", parentEmail)
+                            putExtra("parent_name", parentName)
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        startActivity(intent)
+                        finish()
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "خطأ في معالجة الاستجابة: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            },
+            onError = { error ->
+                runOnUiThread {
+                    isLoggingIn = false
+                    binding.loginButton.isEnabled = true
+                    binding.loginButton.text = "دخول"
+
+                    if (error.contains("Invalid", ignoreCase = true) || 
+                        error.contains("UNAUTHORIZED", ignoreCase = true)) {
+                        Toast.makeText(this, "البريد الإلكتروني أو كلمة المرور غير صحيحة", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this, "فشل تسجيل الدخول: $error", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
-            
-            // الانتقال إلى لوحة التحكم
-            val intent = Intent(this, ParentDashboardActivity::class.java).apply {
-                putExtra("parent_id", parent.id)
-                putExtra("parent_email", parent.email)
-                putExtra("parent_name", parent.name)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            startActivity(intent)
-            finish()
-        } else {
-            Toast.makeText(this, "البريد الإلكتروني أو كلمة المرور غير صحيحة", Toast.LENGTH_LONG).show()
-        }
+        )
     }
 }
