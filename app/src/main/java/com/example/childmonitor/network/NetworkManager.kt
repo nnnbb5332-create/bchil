@@ -199,6 +199,14 @@ class NetworkManager {
 
     /**
      * إرسال طلب JSON-RPC 2.0
+     * 
+     * الصيغة الصحيحة:
+     * {
+     *   "jsonrpc": "2.0",
+     *   "method": "parent.register",
+     *   "params": { "email": "...", "password": "...", "name": "..." },
+     *   "id": 1
+     * }
      */
     private fun sendRequest(
         procedure: String,
@@ -213,17 +221,25 @@ class NetworkManager {
             put("id", 1)
         }.toString().toRequestBody("application/json".toMediaType())
 
+        // ✅ الصحيح: جميع الطلبات تذهب إلى /api/trpc فقط
         val request = Request.Builder()
-            .url("$baseUrl/$procedure")
+            .url(baseUrl)
             .post(requestBody)
+            .addHeader("Content-Type", "application/json")
             .build()
 
         Thread {
             try {
+                Log.d("NetworkManager", "Sending request to: $baseUrl")
+                Log.d("NetworkManager", "Method: $procedure")
+                Log.d("NetworkManager", "Data: $data")
+
                 client.newCall(request).execute().use { response ->
+                    Log.d("NetworkManager", "Response code: ${response.code}")
+
                     if (response.isSuccessful) {
                         val body = response.body?.string() ?: ""
-                        Log.d("NetworkManager", "Response: $body")
+                        Log.d("NetworkManager", "Response body: $body")
                         
                         try {
                             val jsonResponse = JSONObject(body)
@@ -232,11 +248,15 @@ class NetworkManager {
                             if (jsonResponse.has("error")) {
                                 val error = jsonResponse.getJSONObject("error")
                                 val message = error.optString("message", "حدث خطأ غير معروف")
+                                val code = error.optInt("code", -1)
+                                Log.e("NetworkManager", "Error code: $code, message: $message")
                                 onError(message)
                             } else if (jsonResponse.has("result")) {
                                 val result = jsonResponse.getJSONObject("result")
+                                Log.d("NetworkManager", "Success: $result")
                                 onSuccess(result)
                             } else {
+                                Log.e("NetworkManager", "Invalid response format: $jsonResponse")
                                 onError("صيغة الاستجابة غير صحيحة")
                             }
                         } catch (e: Exception) {
@@ -244,12 +264,27 @@ class NetworkManager {
                             onError("خطأ في معالجة الاستجابة: ${e.message}")
                         }
                     } else {
-                        Log.e("NetworkManager", "Request failed: ${response.code}")
-                        onError("فشل الطلب: ${response.code}")
+                        val errorBody = response.body?.string() ?: ""
+                        Log.e("NetworkManager", "Request failed with code: ${response.code}")
+                        Log.e("NetworkManager", "Error body: $errorBody")
+                        
+                        // محاولة قراءة رسالة الخطأ من الاستجابة
+                        try {
+                            val errorJson = JSONObject(errorBody)
+                            if (errorJson.has("error")) {
+                                val error = errorJson.getJSONObject("error")
+                                val message = error.optString("message", "فشل الطلب: ${response.code}")
+                                onError(message)
+                            } else {
+                                onError("فشل الطلب: ${response.code}")
+                            }
+                        } catch (e: Exception) {
+                            onError("فشل الطلب: ${response.code}")
+                        }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("NetworkManager", "Exception", e)
+                Log.e("NetworkManager", "Exception during request", e)
                 onError("خطأ في الاتصال: ${e.message}")
             }
         }.start()
