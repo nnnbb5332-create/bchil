@@ -214,78 +214,58 @@ class NetworkManager {
         onSuccess: (JSONObject) -> Unit,
         onError: (String) -> Unit
     ) {
+        // ✅ الصيغة الجديدة لـ tRPC v11
         val requestBody = JSONObject().apply {
-            put("jsonrpc", "2.0")
-            put("method", procedure)
-            put("params", data)
-            put("id", 1)
+            put("json", data)  // البيانات داخل مفتاح "json"
         }.toString().toRequestBody("application/json".toMediaType())
-
-        // ✅ الصحيح: جميع الطلبات تذهب إلى /api/trpc فقط
+    
+        // ✅ الرابط يجب أن يحتوي على اسم الإجراء
         val request = Request.Builder()
-            .url(baseUrl)
+            .url("$baseUrl/$procedure")  // مثال: /api/trpc/parent.login
             .post(requestBody)
             .addHeader("Content-Type", "application/json")
             .build()
-
+    
         Thread {
             try {
-                Log.d("NetworkManager", "Sending request to: $baseUrl")
-                Log.d("NetworkManager", "Method: $procedure")
+                Log.d("NetworkManager", "Sending request to: $baseUrl/$procedure")
                 Log.d("NetworkManager", "Data: $data")
-
+    
                 client.newCall(request).execute().use { response ->
                     Log.d("NetworkManager", "Response code: ${response.code}")
-
+                    val body = response.body?.string() ?: ""
+                    Log.d("NetworkManager", "Response body: $body")
+    
                     if (response.isSuccessful) {
-                        val body = response.body?.string() ?: ""
-                        Log.d("NetworkManager", "Response body: $body")
-                        
                         try {
                             val jsonResponse = JSONObject(body)
-                            
-                            // التحقق من وجود خطأ
-                            if (jsonResponse.has("error")) {
-                                val error = jsonResponse.getJSONObject("error")
-                                val message = error.optString("message", "حدث خطأ غير معروف")
-                                val code = error.optInt("code", -1)
-                                Log.e("NetworkManager", "Error code: $code, message: $message")
-                                onError(message)
-                            } else if (jsonResponse.has("result")) {
+                            // ✅ الاستجابة تأتي ضمن result.data.json
+                            if (jsonResponse.has("result")) {
                                 val result = jsonResponse.getJSONObject("result")
-                                Log.d("NetworkManager", "Success: $result")
-                                onSuccess(result)
-                            } else {
-                                Log.e("NetworkManager", "Invalid response format: $jsonResponse")
-                                onError("صيغة الاستجابة غير صحيحة")
+                                val data = result.getJSONObject("data").getJSONObject("json")
+                                onSuccess(data)
+                            } else if (jsonResponse.has("error")) {
+                                val error = jsonResponse.getJSONObject("error")
+                                val message = error.getJSONObject("json").optString("message", "حدث خطأ")
+                                onError(message)
                             }
                         } catch (e: Exception) {
-                            Log.e("NetworkManager", "Error parsing response", e)
-                            onError("خطأ في معالجة الاستجابة: ${e.message}")
+                            onError("خطأ في معالجة الاستجابة")
                         }
                     } else {
-                        val errorBody = response.body?.string() ?: ""
-                        Log.e("NetworkManager", "Request failed with code: ${response.code}")
-                        Log.e("NetworkManager", "Error body: $errorBody")
-                        
-                        // محاولة قراءة رسالة الخطأ من الاستجابة
+                        // معالجة أخطاء HTTP
                         try {
-                            val errorJson = JSONObject(errorBody)
-                            if (errorJson.has("error")) {
-                                val error = errorJson.getJSONObject("error")
-                                val message = error.optString("message", "فشل الطلب: ${response.code}")
-                                onError(message)
-                            } else {
-                                onError("فشل الطلب: ${response.code}")
-                            }
+                            val errorJson = JSONObject(body)
+                            val message = errorJson.getJSONObject("error").getJSONObject("json").optString("message", "فشل الطلب")
+                            onError(message)
                         } catch (e: Exception) {
                             onError("فشل الطلب: ${response.code}")
                         }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("NetworkManager", "Exception during request", e)
-                onError("خطأ في الاتصال: ${e.message}")
+                Log.e("NetworkManager", "Exception", e)
+                onError("خطأ في الاتصال")
             }
         }.start()
     }
