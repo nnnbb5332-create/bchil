@@ -72,10 +72,10 @@ class ParentLoginActivity : AppCompatActivity() {
                     binding.loginButton.text = "دخول"
 
                     try {
-                        val data = response.getJSONObject("data")
-                        val parentId = data.getInt("id")
-                        val parentEmail = data.getString("email")
-                        val parentName = data.optString("name", "")
+                        // ✅ الاستجابة هي البيانات مباشرة (result.data.json)
+                        val parentId = response.getInt("id")
+                        val parentEmail = response.getString("email")
+                        val parentName = response.optString("name", "")
 
                         Toast.makeText(this, "تم تسجيل الدخول بنجاح!", Toast.LENGTH_LONG).show()
 
@@ -109,11 +109,18 @@ class ParentLoginActivity : AppCompatActivity() {
                     binding.loginButton.isEnabled = true
                     binding.loginButton.text = "دخول"
 
-                    if (error.contains("Invalid", ignoreCase = true) || 
-                        error.contains("UNAUTHORIZED", ignoreCase = true)) {
-                        Toast.makeText(this, "البريد الإلكتروني أو كلمة المرور غير صحيحة", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(this, "فشل تسجيل الدخول: $error", Toast.LENGTH_LONG).show()
+                    when {
+                        error.contains("Invalid", ignoreCase = true) || 
+                        error.contains("UNAUTHORIZED", ignoreCase = true) ||
+                        error.contains("كلمة المرور", ignoreCase = true) -> {
+                            Toast.makeText(this, "البريد الإلكتروني أو كلمة المرور غير صحيحة", Toast.LENGTH_LONG).show()
+                        }
+                        error.contains("not found", ignoreCase = true) -> {
+                            Toast.makeText(this, "هذا البريد الإلكتروني غير مسجل", Toast.LENGTH_LONG).show()
+                        }
+                        else -> {
+                            Toast.makeText(this, "فشل تسجيل الدخول: $error", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
