@@ -14,7 +14,7 @@ class ApiClient {
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
 
-    private val baseUrl = "https://your-server.com/api/trpc"
+    private val baseUrl = "https://3000-iv9kwo40euydbcxtan4zz-1826f61a.sg1.manus.computer/api/trpc"
 
     fun loginParent(
         email: String,
