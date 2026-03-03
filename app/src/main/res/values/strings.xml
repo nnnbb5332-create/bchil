@@ -2,91 +2,67 @@
 <resources>
     <string name="app_name">مراقب الطفل</string>
     
-    <!-- Splash Screen -->
-    <string name="splash_title">مراقب الطفل</string>
-    <string name="splash_subtitle">اختر نمط الدخول</string>
-    <string name="parent_login">دخول ولي الأمر</string>
-    <string name="child_login">دخول الطفل</string>
+    <!-- Common -->
+    <string name="login">دخول</string>
+    <string name="register">تسجيل</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="name">الاسم</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="back">رجوع</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="delete">حذف</string>
+    <string name="add">إضافة</string>
+    <string name="refresh">تحديث</string>
+    
+    <!-- Mode Selection -->
+    <string name="select_mode">اختر النمط</string>
+    <string name="parent_mode">نمط ولي الأمر</string>
+    <string name="child_mode">نمط الطفل</string>
+    <string name="parent_mode_desc">راقب أطفالك وتابع مواقعهم</string>
+    <string name="child_mode_desc">شارك موقعك مع والديك</string>
     
     <!-- Parent Login -->
-    <string name="parent_login_title">تسجيل الدخول</string>
-    <string name="email_hint">البريد الإلكتروني</string>
-    <string name="password_hint">كلمة المرور</string>
-    <string name="login_button">دخول</string>
-    <string name="back">رجوع</string>
+    <string name="parent_login">تسجيل دخول الأب</string>
     <string name="no_account">ليس لديك حساب؟</string>
     <string name="create_account">إنشاء حساب جديد</string>
-    <string name="has_account">لديك حساب بالفعل؟</string>
     
     <!-- Parent Register -->
-    <string name="register_title">إنشاء حساب جديد</string>
-    <string name="name_hint">الاسم</string>
-    <string name="confirm_password_hint">تأكيد كلمة المرور</string>
-    <string name="register_button">إنشاء الحساب</string>
+    <string name="parent_register">تسجيل حساب جديد</string>
+    <string name="has_account">لديك حساب بالفعل؟</string>
+    
+    <!-- Parent Dashboard -->
+    <string name="welcome">مرحباً</string>
+    <string name="my_children">أطفالي</string>
+    <string name="add_child">إضافة طفل</string>
+    <string name="no_children">لا يوجد أطفال مسجلين</string>
+    <string name="child_code">الرمز</string>
+    <string name="view_location">عرض الموقع</string>
     
     <!-- Child Login -->
-    <string name="child_login_title">دخول الطفل</string>
-    <string name="child_code_hint">الرمز السري</string>
-    <string name="child_code_info">أدخل الرمز الذي أعطاك إياه ولي أمرك</string>
+    <string name="child_login">تسجيل دخول الطفل</string>
+    <string name="child_id">رمز الطفل</string>
+    <string name="enter_child_id">أدخل رمز الطفل</string>
     
-    <!-- Dashboard -->
-    <string name="dashboard_title">لوحة التحكم</string>
-    <string name="welcome">مرحباً</string>
-    <string name="add_child">+ إضافة طفل جديد</string>
-    <string name="no_children">لم يتم إضافة أطفال بعد</string>
-    <string name="no_children_hint">اضغط الزر أدناه لإضافة طفل جديد</string>
-    <string name="children_count">عدد الأطفال: %d</string>
-    <string name="logout">خروج</string>
+    <!-- Child Dashboard -->
+    <string name="child_welcome">مرحباً يا</string>
+    <string name="sharing_location">جاري مشاركة الموقع...</string>
+    <string name="location_shared">الموقع يتم مشاركته مع والديك</string>
     
     <!-- Add Child -->
-    <string name="add_child_title">إضافة طفل جديد</string>
-    <string name="child_name_hint">اسم الطفل</string>
-    <string name="add_button">إضافة الطفل</string>
-    <string name="what_will_happen">ماذا سيحدث؟</string>
-    <string name="add_child_info">• سيتم إنشاء رمز فريد مكون من 6 أحرف\n• سيعطى الرمز للطفل لاستخدامه في الدخول\n• يمكنك رؤية الرمز مرة أخرى من لوحة التحكم</string>
+    <string name="add_new_child">إضافة طفل جديد</string>
+    <string name="child_name">اسم الطفل</string>
+    <string name="child_password">كلمة مرور الطفل</string>
+    <string name="child_added">تم إضافة الطفل بنجاح</string>
     
-    <!-- Messages -->
-    <string name="fill_all_fields">الرجاء ملء جميع الحقول</string>
-    <string name="invalid_email">البريد الإلكتروني غير صالح</string>
-    <string name="invalid_password">كلمة المرور يجب أن تكون 6 أحرف على الأقل</string>
-    <string name="passwords_not_match">كلمتا المرور غير متطابقتين</string>
-    <string name="email_exists">هذا البريد الإلكتروني مسجل مسبقاً</string>
-    <string name="invalid_code">الرمز غير صحيح أو غير موجود</string>
-    <string name="login_success">تم تسجيل الدخول بنجاح</string>
-    <string name="register_success">تم إنشاء الحساب بنجاح</string>
-    <string name="add_child_success">تم إضافة الطفل بنجاح</string>
-    <string name="child_code">رمز الطفل</string>
-    <string name="copy_code">نسخ الرمز</string>
-    <string name="code_copied">تم نسخ الرمز</string>
-    <string name="delete_child">حذف الطفل</string>
-    <string name="delete_child_confirm">هل أنت متأكد من حذف هذا الطفل؟ سيتم حذف جميع بياناته بشكل نهائي.</string>
-    <string name="delete">حذف</string>
-    <string name="cancel">إلغاء</string>
-    <string name="logout_confirm">هل أنت متأكد من تسجيل الخروج؟</string>
-    <string name="view_code">عرض الرمز</string>
-    <string name="view_locations">عرض المواقع</string>
-    
-    <!-- Location -->
+    <!-- Child Location -->
+    <string name="child_location">موقع الطفل</string>
     <string name="current_location">الموقع الحالي</string>
-    <string name="location_history">سجل المواقع</string>
+    <string name="no_location">لا يوجد موقع متاح</string>
     <string name="latitude">خط العرض</string>
     <string name="longitude">خط الطول</string>
-    <string name="no_locations">لا توجد مواقع مسجلة</string>
-    
-    <!-- Battery -->
-    <string name="battery_level">مستوى البطارية</string>
-    <string name="battery_status">حالة البطارية</string>
-    
-    <!-- Apps -->
-    <string name="app_usage">استخدام التطبيقات</string>
-    <string name="most_used_apps">التطبيقات الأكثر استخداماً</string>
-    
-    <!-- Calls and Messages -->
-    <string name="calls">المكالمات</string>
-    <string name="messages">الرسائل</string>
-    <string name="whatsapp">الواتساب</string>
-    
-    <!-- Settings -->
-    <string name="settings">الإعدادات</string>
-    <string name="about">حول التطبيق</string>
+    <string name="address">العنوان</string>
+    <string name="time">الوقت</string>
 </resources>

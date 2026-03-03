@@ -2,12 +2,12 @@ package com.example.childmonitor.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.childmonitor.databinding.ActivityParentRegisterBinding
 import com.example.childmonitor.network.NetworkManager
-import org.json.JSONObject
 
 class ParentRegisterActivity : AppCompatActivity() {
 
@@ -27,7 +27,7 @@ class ParentRegisterActivity : AppCompatActivity() {
         }
 
         binding.loginLink.setOnClickListener {
-            finish()
+            finish() // العودة لشاشة تسجيل الدخول
         }
 
         binding.backButton.setOnClickListener {
@@ -45,11 +45,6 @@ class ParentRegisterActivity : AppCompatActivity() {
         when {
             name.isEmpty() -> {
                 binding.nameInput.error = "الرجاء إدخال الاسم"
-                binding.nameInput.requestFocus()
-                return
-            }
-            name.length < 3 -> {
-                binding.nameInput.error = "الاسم يجب أن يكون 3 أحرف على الأقل"
                 binding.nameInput.requestFocus()
                 return
             }
@@ -73,11 +68,6 @@ class ParentRegisterActivity : AppCompatActivity() {
                 binding.passwordInput.requestFocus()
                 return
             }
-            confirmPassword.isEmpty() -> {
-                binding.confirmPasswordInput.error = "الرجاء تأكيد كلمة المرور"
-                binding.confirmPasswordInput.requestFocus()
-                return
-            }
             password != confirmPassword -> {
                 binding.confirmPasswordInput.error = "كلمتا المرور غير متطابقتين"
                 binding.confirmPasswordInput.requestFocus()
@@ -85,7 +75,7 @@ class ParentRegisterActivity : AppCompatActivity() {
             }
         }
 
-        // إرسال طلب التسجيل إلى الخادم
+        // إرسال طلب التسجيل
         isRegistering = true
         binding.registerButton.isEnabled = false
         binding.registerButton.text = "جاري التسجيل..."
@@ -98,17 +88,32 @@ class ParentRegisterActivity : AppCompatActivity() {
                 runOnUiThread {
                     isRegistering = false
                     binding.registerButton.isEnabled = true
-                    binding.registerButton.text = "إنشاء حساب"
+                    binding.registerButton.text = "تسجيل"
 
                     try {
-                        val data = response.getJSONObject("data")
-                        val parentId = data.getInt("id")
-                        val parentEmail = data.getString("email")
-                        val parentName = data.optString("name", "")
+                        Log.d("ParentRegister", "Response: $response")
+                        
+                        // ✅ الاستجابة هي البيانات مباشرة
+                        val parentId = response.getInt("id")
+                        val parentEmail = response.getString("email")
+                        val parentName = response.optString("name", "")
 
                         Toast.makeText(this, "تم إنشاء الحساب بنجاح!", Toast.LENGTH_LONG).show()
 
-                        // الانتقال إلى لوحة التحكم
+                        // ✅ حفظ بيانات الجلسة
+                        val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                        sharedPref.edit().apply {
+                            putInt("parent_id", parentId)
+                            putString("parent_email", parentEmail)
+                            putString("parent_name", parentName)
+                            putString("user_type", "parent")
+                            putBoolean("is_logged_in", true)
+                            apply()
+                        }
+
+                        Log.d("ParentRegister", "Saved session - ID: $parentId")
+
+                        // ✅ الانتقال إلى لوحة التحكم
                         val intent = Intent(this, ParentDashboardActivity::class.java).apply {
                             putExtra("parent_id", parentId)
                             putExtra("parent_email", parentEmail)
@@ -118,6 +123,7 @@ class ParentRegisterActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } catch (e: Exception) {
+                        Log.e("ParentRegister", "Error parsing response", e)
                         Toast.makeText(this, "خطأ في معالجة الاستجابة: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -126,14 +132,16 @@ class ParentRegisterActivity : AppCompatActivity() {
                 runOnUiThread {
                     isRegistering = false
                     binding.registerButton.isEnabled = true
-                    binding.registerButton.text = "إنشاء حساب"
+                    binding.registerButton.text = "تسجيل"
 
-                    if (error.contains("already registered", ignoreCase = true) || 
-                        error.contains("CONFLICT", ignoreCase = true)) {
-                        binding.emailInput.error = "هذا البريد الإلكتروني مسجل مسبقاً"
-                        binding.emailInput.requestFocus()
-                    } else {
-                        Toast.makeText(this, "فشل التسجيل: $error", Toast.LENGTH_LONG).show()
+                    when {
+                        error.contains("already exists", ignoreCase = true) || 
+                        error.contains("مستخدم", ignoreCase = true) -> {
+                            Toast.makeText(this, "هذا البريد الإلكتروني مسجل مسبقاً", Toast.LENGTH_LONG).show()
+                        }
+                        else -> {
+                            Toast.makeText(this, "فشل التسجيل: $error", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }

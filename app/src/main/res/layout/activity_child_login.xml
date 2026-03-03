@@ -1,90 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
-    android:background="@color/white">
+    android:fillViewport="true"
+    android:background="@color/background">
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/back"
-        android:backgroundTint="@color/gray"
-        android:textColor="@color/white"
-        android:layout_gravity="start" />
-
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ic_launcher_foreground"
-        android:layout_marginTop="48dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="دخول الطفل"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_color"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="أدخل الرمز الذي أعطاك إياه ولي أمرك"
-        android:textSize="14sp"
-        android:textColor="@color/gray"
-        android:layout_marginTop="8dp"
-        android:textAlignment="center" />
-
-    <!-- حقل إدخال الرمز -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="الرمز السري"
-        android:textSize="14sp"
-        android:textColor="@color/text_color"
-        android:layout_marginTop="48dp" />
-
-    <EditText
-        android:id="@+id/codeInput"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="XXXXXX"
-        android:inputType="textCapCharacters|textNoSuggestions"
-        android:maxLength="6"
-        android:layout_marginTop="8dp"
-        android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:textColor="@color/text_color"
-        android:textColorHint="@color/hint_color"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:letterSpacing="0.3"
-        android:textAllCaps="true" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="الرمز يتكون من 6 أحرف وأرقام"
-        android:textSize="12sp"
-        android:textColor="@color/hint_color"
-        android:layout_marginTop="8dp" />
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back" />
 
-    <!-- زر الدخول -->
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="دخول"
-        android:layout_marginTop="32dp"
-        android:padding="16dp"
-        android:backgroundTint="@color/green"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="16sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/child_login"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp" />
 
-</LinearLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/child_id"
+            style="@style/InputField"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/childIdInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            style="@style/InputField"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/loginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            style="@style/ButtonPrimary" />
+
+    </LinearLayout>
+
+</ScrollView>

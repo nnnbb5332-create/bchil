@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.childmonitor">
 
-    <!-- Permissions -->
+    <!-- أذونات الإنترنت -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- أذونات الموقع -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.BATTERY_STATS" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- أذونات الخدمة في الخلفية -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!-- أذونات استخدام التطبيقات -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- أذونات الإشعارات -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -24,77 +29,75 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ChildMonitor">
+        android:theme="@style/Theme.ChildMonitor"
+        android:usesCleartextTraffic="false">
 
-        <!-- Activities -->
+        <!-- شاشة البداية -->
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.ChildMonitor.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- اختيار النمط -->
+        <activity
+            android:name=".activities.ModeSelectionActivity"
+            android:exported="false" />
+
+        <!-- تسجيل دخول الأب -->
         <activity
             android:name=".activities.ParentLoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
+        <!-- تسجيل حساب الأب -->
         <activity
             android:name=".activities.ParentRegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
-        <activity
-            android:name=".activities.ChildLoginActivity"
-            android:exported="false" />
-
+        <!-- لوحة تحكم الأب -->
         <activity
             android:name=".activities.ParentDashboardActivity"
             android:exported="false" />
 
+        <!-- تسجيل دخول الطفل -->
+        <activity
+            android:name=".activities.ChildLoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- لوحة تحكم الطفل -->
+        <activity
+            android:name=".activities.ChildDashboardActivity"
+            android:exported="false" />
+
+        <!-- إضافة طفل -->
         <activity
             android:name=".activities.AddChildActivity"
             android:exported="false" />
 
-        <!-- Services -->
+        <!-- عرض موقع الطفل -->
+        <activity
+            android:name=".activities.ChildLocationActivity"
+            android:exported="false" />
+
+        <!-- خدمة الموقع -->
         <service
-            android:name=".services.MonitoringService"
+            android:name=".services.LocationService"
+            android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
 
+        <!-- خدمة استخدام التطبيقات -->
         <service
-            android:name=".services.AccessibilityMonitoringService"
-            android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
-
-        <!-- Receivers -->
-        <receiver
-            android:name=".receivers.CallReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".receivers.SmsReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Meta-data for Google Maps -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_GOOGLE_MAPS_API_KEY_HERE" />
+            android:name=".services.AppUsageService"
+            android:enabled="true"
+            android:exported="false" />
 
     </application>
 

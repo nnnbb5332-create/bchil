@@ -2,6 +2,7 @@ package com.example.childmonitor.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -72,24 +73,29 @@ class ParentLoginActivity : AppCompatActivity() {
                     binding.loginButton.text = "دخول"
 
                     try {
-                        // ✅ الاستجابة هي البيانات مباشرة (result.data.json)
+                        Log.d("ParentLogin", "Response: $response")
+                        
+                        // ✅ الاستجابة هي البيانات مباشرة
                         val parentId = response.getInt("id")
                         val parentEmail = response.getString("email")
                         val parentName = response.optString("name", "")
 
                         Toast.makeText(this, "تم تسجيل الدخول بنجاح!", Toast.LENGTH_LONG).show()
 
-                        // حفظ بيانات الجلسة
+                        // ✅ حفظ بيانات الجلسة بشكل صحيح
                         val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
                         sharedPref.edit().apply {
                             putInt("parent_id", parentId)
                             putString("parent_email", parentEmail)
                             putString("parent_name", parentName)
                             putString("user_type", "parent")
+                            putBoolean("is_logged_in", true) // ✅ مهم جداً!
                             apply()
                         }
 
-                        // الانتقال إلى لوحة التحكم
+                        Log.d("ParentLogin", "Saved session - ID: $parentId, Email: $parentEmail")
+
+                        // ✅ الانتقال إلى لوحة التحكم
                         val intent = Intent(this, ParentDashboardActivity::class.java).apply {
                             putExtra("parent_id", parentId)
                             putExtra("parent_email", parentEmail)
@@ -99,6 +105,7 @@ class ParentLoginActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } catch (e: Exception) {
+                        Log.e("ParentLogin", "Error parsing response", e)
                         Toast.makeText(this, "خطأ في معالجة الاستجابة: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }

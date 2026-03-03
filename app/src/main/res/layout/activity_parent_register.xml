@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/white">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,154 +13,120 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <Button
+        <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/back"
-            android:backgroundTint="@color/gray"
-            android:textColor="@color/white" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="إنشاء حساب جديد"
+            android:text="@string/parent_register"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="@color/text_color"
+            android:textColor="@color/text_primary"
             android:layout_marginTop="32dp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_marginBottom="32dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="أنشئ حساباً لمراقبة أطفالك"
-            android:textSize="14sp"
-            android:textColor="@color/gray"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="center_horizontal" />
-
-        <!-- الاسم -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="الاسم"
-            android:textSize="14sp"
-            android:textColor="@color/text_color"
-            android:layout_marginTop="32dp" />
-
-        <EditText
-            android:id="@+id/nameInput"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="أدخل اسمك"
-            android:inputType="textPersonName"
-            android:layout_marginTop="8dp"
-            android:padding="16dp"
-            android:background="@drawable/edit_text_background"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/hint_color" />
+            android:hint="@string/name"
+            style="@style/InputField"
+            android:layout_marginBottom="16dp">
 
-        <!-- البريد الإلكتروني -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="البريد الإلكتروني"
-            android:textSize="14sp"
-            android:textColor="@color/text_color"
-            android:layout_marginTop="16dp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
 
-        <EditText
-            android:id="@+id/emailInput"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="example@email.com"
-            android:inputType="textEmailAddress"
-            android:layout_marginTop="8dp"
-            android:padding="16dp"
-            android:background="@drawable/edit_text_background"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/hint_color" />
+            android:hint="@string/email"
+            style="@style/InputField"
+            android:layout_marginBottom="16dp">
 
-        <!-- كلمة المرور -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="كلمة المرور"
-            android:textSize="14sp"
-            android:textColor="@color/text_color"
-            android:layout_marginTop="16dp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
 
-        <EditText
-            android:id="@+id/passwordInput"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="6 أحرف على الأقل"
-            android:inputType="textPassword"
-            android:layout_marginTop="8dp"
-            android:padding="16dp"
-            android:background="@drawable/edit_text_background"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/hint_color" />
+            android:hint="@string/password"
+            style="@style/InputField"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="16dp">
 
-        <!-- تأكيد كلمة المرور -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="تأكيد كلمة المرور"
-            android:textSize="14sp"
-            android:textColor="@color/text_color"
-            android:layout_marginTop="16dp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
 
-        <EditText
-            android:id="@+id/confirmPasswordInput"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="أعد إدخال كلمة المرور"
-            android:inputType="textPassword"
-            android:layout_marginTop="8dp"
-            android:padding="16dp"
-            android:background="@drawable/edit_text_background"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/hint_color" />
+            android:hint="@string/confirm_password"
+            style="@style/InputField"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="24dp">
 
-        <!-- زر التسجيل -->
-        <Button
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/confirmPasswordInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="إنشاء الحساب"
-            android:layout_marginTop="32dp"
-            android:padding="16dp"
-            android:backgroundTint="@color/blue"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="16sp" />
+            android:text="@string/register"
+            style="@style/ButtonPrimary"
+            android:layout_marginBottom="24dp" />
 
-        <!-- رابط تسجيل الدخول -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="24dp"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="لديك حساب بالفعل؟ "
-                android:textSize="14sp"
-                android:textColor="@color/gray" />
+                android:text="@string/has_account"
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/loginLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="تسجيل الدخول"
-                android:textSize="14sp"
-                android:textColor="@color/blue"
-                android:textStyle="bold" />
+                android:text="@string/login"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
         </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

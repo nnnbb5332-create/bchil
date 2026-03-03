@@ -1,116 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_color">
+    android:background="@color/background">
 
-    <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/blue">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/welcomeText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="لوحة التحكم"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/logoutButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="خروج"
-                android:backgroundTint="@color/red"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </androidx.appcompat.widget.Toolbar>
-
-    <!-- المحتوى -->
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@color/primary"
+        android:padding="24dp">
 
-        <!-- عدد الأطفال -->
         <TextView
-            android:id="@+id/childrenCountText"
+            android:id="@+id/welcomeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="عدد الأطفال: 0"
-            android:textSize="16sp"
-            android:textColor="@color/text_color"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <!-- قائمة الأطفال -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/childrenRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:visibility="gone" />
-
-        <!-- رسالة لا يوجد أطفال -->
-        <LinearLayout
-            android:id="@+id/noChildrenText"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="visible">
-
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/ic_launcher_foreground"
-                android:alpha="0.5" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="لم يتم إضافة أطفال بعد"
-                android:textSize="18sp"
-                android:textColor="@color/gray"
-                android:layout_marginTop="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="اضغط الزر أدناه لإضافة طفل جديد"
-                android:textSize="14sp"
-                android:textColor="@color/hint_color"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
-
-        <!-- زر إضافة طفل -->
-        <Button
-            android:id="@+id/addChildButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="+ إضافة طفل جديد"
-            android:layout_marginTop="16dp"
-            android:padding="16dp"
-            android:backgroundTint="@color/green"
+            android:text="@string/welcome"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/my_children"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
+
+    <!-- Content -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Add Child Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addChildButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_child"
+                    app:icon="@drawable/ic_add"
+                    style="@style/ButtonPrimary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Refresh Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/refreshButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/refresh"
+                    app:icon="@drawable/ic_refresh"
+                    style="@style/ButtonSecondary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Empty State -->
+                <TextView
+                    android:id="@+id/emptyStateText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_children"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:padding="32dp"
+                    android:visibility="gone" />
+
+                <!-- Children Container -->
+                <LinearLayout
+                    android:id="@+id/childrenContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Bottom Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:padding="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            app:icon="@drawable/ic_logout"
+            style="@style/ButtonSecondary" />
+
+    </LinearLayout>
+
 </LinearLayout>
