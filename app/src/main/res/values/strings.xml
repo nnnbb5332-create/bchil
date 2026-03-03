@@ -53,7 +53,7 @@
     <string name="email_exists">هذا البريد الإلكتروني مسجل مسبقاً</string>
     <string name="invalid_code">الرمز غير صحيح أو غير موجود</string>
     <string name="login_success">تم تسجيل الدخول بنجاح</string>
-    <string name="register_success">تم إنشاء الحساب بنجاح</login>
+    <string name="register_success">تم إنشاء الحساب بنجاح</string>
     <string name="add_child_success">تم إضافة الطفل بنجاح</string>
     <string name="child_code">رمز الطفل</string>
     <string name="copy_code">نسخ الرمز</string>
