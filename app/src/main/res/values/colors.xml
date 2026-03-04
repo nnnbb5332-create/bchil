@@ -8,6 +8,14 @@
     <color name="error_color">#FFB00020</color>
     <color name="text_color">#FF000000</color>
 
+    <!-- ألوان مطلوبة من layouts و drawables -->
+    <color name="primary">#FF6200EE</color>
+    <color name="accent">#FF03DAC5</color>
+    <color name="background">#FFF5F5F5</color>
+    <color name="text_primary">#FF212121</color>
+    <color name="text_secondary">#FF757575</color>
+    <color name="success">#FF4CAF50</color>
+
     <!-- ألوان إضافية -->
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
