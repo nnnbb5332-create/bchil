@@ -72,6 +72,16 @@
                 android:layout_marginEnd="8dp" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewCameraButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="الكاميرا"
+                app:icon="@drawable/ic_apps"
+                style="@style/ButtonPrimary"
+                android:layout_marginEnd="8dp" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/deleteChildButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
