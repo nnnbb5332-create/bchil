@@ -3,6 +3,7 @@ package com.example.childmonitor.activities
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,29 +21,36 @@ class ChildCameraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityChildCameraBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        try {
+            binding = ActivityChildCameraBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-        childId = intent.getIntExtra("child_id", -1)
-        childName = intent.getStringExtra("child_name") ?: "الطفل"
+            childId = intent.getIntExtra("child_id", -1)
+            childName = intent.getStringExtra("child_name") ?: "الطفل"
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "كاميرا $childName"
+            // إعداد Toolbar
+            setSupportActionBar(binding.toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title = "كاميرا $childName"
 
-        binding.toolbar.setNavigationOnClickListener {
+            binding.toolbar.setNavigationOnClickListener {
+                finish()
+            }
+
+            binding.captureButton.setOnClickListener {
+                requestNewImage()
+            }
+
+            // جلب آخر صورة عند الفتح
+            fetchLatestImage()
+            
+            // تحديث تلقائي كل 10 ثوانٍ
+            startAutoUpdate()
+        } catch (e: Exception) {
+            Log.e("ChildCameraActivity", "Error in onCreate: ${e.message}")
+            Toast.makeText(this, "حدث خطأ أثناء فتح الشاشة", Toast.LENGTH_LONG).show()
             finish()
         }
-
-        binding.captureButton.setOnClickListener {
-            requestNewImage()
-        }
-
-        // جلب آخر صورة عند الفتح
-        fetchLatestImage()
-        
-        // تحديث تلقائي كل 10 ثوانٍ
-        startAutoUpdate()
     }
 
     private fun requestNewImage() {
@@ -82,19 +90,24 @@ class ChildCameraActivity : AppCompatActivity() {
                         if (imageBase64.isNotEmpty()) {
                             val imageBytes = Base64.decode(imageBase64, Base64.DEFAULT)
                             val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            binding.cameraImageView.setImageBitmap(bitmap)
-                            binding.statusText.text = "آخر صورة ملتقطة"
+                            if (bitmap != null) {
+                                binding.cameraImageView.setImageBitmap(bitmap)
+                                binding.statusText.text = "آخر صورة ملتقطة"
+                            }
                         }
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e("ChildCameraActivity", "Error decoding image: ${e.message}")
                     }
                 }
             },
-            onError = { /* تجاهل الخطأ في التحديث التلقائي */ }
+            onError = { error ->
+                Log.e("ChildCameraActivity", "Error fetching image: $error")
+            }
         )
     }
 
     private fun startAutoUpdate() {
+        timer?.cancel()
         timer = Timer()
         timer?.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
