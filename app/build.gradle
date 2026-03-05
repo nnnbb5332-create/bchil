@@ -9,38 +9,23 @@ android {
 
     defaultConfig {
         applicationId "com.example.childmonitor"
-        minSdk 21          // ✅ تم تخفيضه من 31 إلى 21 لدعم أجهزة أكثر
+        minSdk 21
         targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // ✅ إضافة إعداد التوقيع - هذا كان المشكلة الرئيسية
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
-        release {
-            storeFile file('debug.keystore')   // استخدم debug للتثبيت المحلي
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
-    }
-
+    // ✅ لا تضع signingConfigs يدوياً - اتركه للـ workflow أو للـ default
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
             debuggable true
+            // ✅ Android يستخدم debug keystore الافتراضي تلقائياً
         }
         release {
-            signingConfig signingConfigs.release  // ✅ هذا كان مفقوداً - سبب المشكلة
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // ✅ الـ workflow سيتولى التوقيع
         }
     }
 
