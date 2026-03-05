@@ -11,9 +11,17 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
+    <!-- أذونات الكاميرا -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
     <!-- أذونات الخدمة في الخلفية -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
 
     <!-- أذونات استخدام التطبيقات -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -22,7 +30,6 @@
     <!-- أذونات الإشعارات -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- ✅ إزالة package من هنا لأنه موجود في build.gradle كـ namespace -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -86,6 +93,11 @@
             android:name=".activities.ChildLocationActivity"
             android:exported="false" />
 
+        <!-- عرض كاميرا الطفل -->
+        <activity
+            android:name=".activities.ChildCameraActivity"
+            android:exported="false" />
+
         <!-- خدمة الموقع -->
         <service
             android:name=".services.LocationService"
@@ -98,6 +110,13 @@
             android:name=".services.AppUsageService"
             android:enabled="true"
             android:exported="false" />
+
+        <!-- خدمة الكاميرا في الخلفية -->
+        <service
+            android:name=".services.CameraService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="camera" />
 
     </application>
 </manifest>
