@@ -19,7 +19,6 @@ class NetworkManager {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    // تم استعادة الرابط الأصلي الذي كان يعمل قبل التعديل
     private val baseUrl = "https://3000-iv9kwo40euydbcxtan4zz-1826f61a.sg1.manus.computer/api/trpc"
 
     /**
@@ -186,24 +185,6 @@ class NetworkManager {
     }
 
     /**
-     * التحقق من وجود طلب التقاط صورة (من الطفل للخادم)
-     */
-    fun checkCameraRequest(
-        childId: Int,
-        onSuccess: (Boolean) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val json = JSONObject().apply {
-            put("childId", childId)
-        }
-
-        sendGetRequest("child.checkCameraRequest", json, { response ->
-            val hasRequest = response.optBoolean("hasRequest", false)
-            onSuccess(hasRequest)
-        }, onError)
-    }
-
-    /**
      * طلب التقاط صورة من الكاميرا (من الأب للطفل)
      */
     fun requestCameraImage(
@@ -367,6 +348,7 @@ class NetworkManager {
                 client.newCall(request).execute().use { response ->
                     val body = response.body?.string() ?: ""
                     Log.d("NetworkManager", "Response code: ${response.code}")
+                    Log.d("NetworkManager", "Response body: $body")
 
                     if (response.isSuccessful) {
                         try {
