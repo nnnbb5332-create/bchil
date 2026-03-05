@@ -4,21 +4,23 @@ import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import com.example.childmonitor.api.ApiClient
+import com.example.childmonitor.network.NetworkManager
 
 class AppUsageMonitor(private val context: Context) {
 
     private val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
     private val packageManager = context.packageManager
-    private val apiClient = ApiClient()
-    private var childId: String = ""
+    private val networkManager = NetworkManager.getInstance()
+    private var childId: Int = -1
 
-    fun startMonitoring(childId: String) {
+    fun startMonitoring(childId: Int) {
         this.childId = childId
         collectAppUsage()
     }
 
     private fun collectAppUsage() {
+        if (childId == -1) return
+
         val calendar = java.util.Calendar.getInstance()
         val endTime = calendar.timeInMillis
         calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
@@ -29,7 +31,7 @@ class AppUsageMonitor(private val context: Context) {
         for (stat in stats) {
             if (stat.totalTimeInForeground > 0) {
                 val appName = getAppName(stat.packageName)
-                apiClient.sendAppUsage(
+                networkManager.sendAppUsage(
                     childId,
                     appName,
                     stat.packageName,
