@@ -19,6 +19,7 @@ class NetworkManager {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
+    // تم استعادة الرابط الأصلي الذي كان يعمل قبل التعديل
     private val baseUrl = "https://3000-iv9kwo40euydbcxtan4zz-1826f61a.sg1.manus.computer/api/trpc"
 
     /**
