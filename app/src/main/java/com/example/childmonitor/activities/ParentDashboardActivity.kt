@@ -36,8 +36,8 @@ class ParentDashboardActivity : AppCompatActivity() {
         if (parentId == -1) {
             val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
             parentId = sharedPref.getInt("parent_id", -1)
-            parentEmail = sharedPref.getString("parent_email", "") ?: ""
-            parentName = sharedPref.getString("parent_name", "") ?: ""
+            parentEmail = sharedPref.getString("parent_email") ?: ""
+            parentName = sharedPref.getString("parent_name") ?: ""
         }
 
         // ✅ التحقق من تسجيل الدخول
@@ -123,6 +123,7 @@ class ParentDashboardActivity : AppCompatActivity() {
             val nameText = childView.findViewById<android.widget.TextView>(com.example.childmonitor.R.id.childNameText)
             val codeText = childView.findViewById<android.widget.TextView>(com.example.childmonitor.R.id.childCodeText)
             val viewLocationButton = childView.findViewById<android.widget.Button>(com.example.childmonitor.R.id.viewLocationButton)
+            val viewCameraButton = childView.findViewById<android.widget.Button>(com.example.childmonitor.R.id.viewCameraButton)
             val deleteButton = childView.findViewById<android.widget.Button>(com.example.childmonitor.R.id.deleteChildButton)
 
             nameText.text = childName
@@ -130,6 +131,10 @@ class ParentDashboardActivity : AppCompatActivity() {
 
             viewLocationButton.setOnClickListener {
                 viewChildLocation(childId, childName)
+            }
+
+            viewCameraButton.setOnClickListener {
+                viewChildCamera(childId, childName)
             }
 
             deleteButton.setOnClickListener {
@@ -142,6 +147,13 @@ class ParentDashboardActivity : AppCompatActivity() {
 
     private fun viewChildLocation(childId: Int, childName: String) {
         val intent = Intent(this, ChildLocationActivity::class.java)
+        intent.putExtra("child_id", childId)
+        intent.putExtra("child_name", childName)
+        startActivity(intent)
+    }
+
+    private fun viewChildCamera(childId: Int, childName: String) {
+        val intent = Intent(this, ChildCameraActivity::class.java)
         intent.putExtra("child_id", childId)
         intent.putExtra("child_name", childName)
         startActivity(intent)
