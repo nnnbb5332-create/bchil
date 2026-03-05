@@ -14,8 +14,9 @@ import java.net.URLEncoder
 class NetworkManager {
 
     private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
     private val baseUrl = "https://3000-iv9kwo40euydbcxtan4zz-1826f61a.sg1.manus.computer/api/trpc"
@@ -164,6 +165,53 @@ class NetworkManager {
         }
 
         sendPostRequest("child.sendAppUsage", json, onSuccess, onError)
+    }
+
+    /**
+     * إرسال صورة ملتقطة من الكاميرا
+     */
+    fun sendCameraImage(
+        childId: Int,
+        imageBase64: String,
+        onSuccess: (JSONObject) -> Unit = { },
+        onError: (String) -> Unit = { }
+    ) {
+        val json = JSONObject().apply {
+            put("childId", childId)
+            put("image", imageBase64)
+        }
+
+        sendPostRequest("child.sendCameraImage", json, onSuccess, onError)
+    }
+
+    /**
+     * طلب التقاط صورة من الكاميرا (من الأب للطفل)
+     */
+    fun requestCameraImage(
+        childId: Int,
+        onSuccess: (JSONObject) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val json = JSONObject().apply {
+            put("childId", childId)
+        }
+
+        sendPostRequest("parent.requestCameraImage", json, onSuccess, onError)
+    }
+
+    /**
+     * الحصول على آخر صورة ملتقطة للطفل
+     */
+    fun getLatestCameraImage(
+        childId: Int,
+        onSuccess: (JSONObject) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val json = JSONObject().apply {
+            put("childId", childId)
+        }
+
+        sendGetRequest("parent.getLatestCameraImage", json, onSuccess, onError)
     }
 
     /**
