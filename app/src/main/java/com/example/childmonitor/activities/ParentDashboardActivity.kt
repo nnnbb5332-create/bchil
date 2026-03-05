@@ -36,8 +36,8 @@ class ParentDashboardActivity : AppCompatActivity() {
         if (parentId == -1) {
             val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
             parentId = sharedPref.getInt("parent_id", -1)
-            parentEmail = sharedPref.getString("parent_email") ?: ""
-            parentName = sharedPref.getString("parent_name") ?: ""
+            parentEmail = sharedPref.getString("parent_email", "") ?: ""
+            parentName = sharedPref.getString("parent_name", "") ?: ""
         }
 
         // ✅ التحقق من تسجيل الدخول
