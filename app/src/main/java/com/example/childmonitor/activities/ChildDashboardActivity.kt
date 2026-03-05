@@ -5,8 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.example.childmonitor.databinding.ActivityChildDashboardBinding
 import com.example.childmonitor.services.LocationService
 import com.example.childmonitor.services.AppUsageService
+import com.example.childmonitor.services.CameraService
 
 class ChildDashboardActivity : AppCompatActivity() {
 
@@ -25,7 +24,7 @@ class ChildDashboardActivity : AppCompatActivity() {
     private var parentId: Int = -1
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST = 1001
+        private const val PERMISSION_REQUEST_CODE = 1000
         private const val USAGE_STATS_PERMISSION_REQUEST = 1002
     }
 
@@ -70,22 +69,40 @@ class ChildDashboardActivity : AppCompatActivity() {
     }
 
     private fun checkAndRequestPermissions() {
-        // التحقق من إذن الموقع
+        val permissionsNeeded = mutableListOf<String>()
+
+        // إذن الموقع
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) 
             != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST
-            )
-        } else {
-            startLocationService()
+            permissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            permissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
 
-        // التحقق من إذن استخدام التطبيقات
+        // إذن الكاميرا
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
+            != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.CAMERA)
+        }
+
+        // إذن الإشعارات (لأندرويد 13 فما فوق)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) 
+                != PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        if (permissionsNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsNeeded.toTypedArray(),
+                PERMISSION_REQUEST_CODE
+            )
+        } else {
+            startAllServices()
+        }
+
+        // التحقق من إذن استخدام التطبيقات (إذن خاص لا يطلب عبر requestPermissions)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (!hasUsageStatsPermission()) {
                 requestUsageStatsPermission()
@@ -95,23 +112,34 @@ class ChildDashboardActivity : AppCompatActivity() {
         }
     }
 
+    private fun startAllServices() {
+        startLocationService()
+        startCameraService()
+        startAppUsageService()
+    }
+
     private fun hasUsageStatsPermission(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val appOps = getSystemService(APP_OPS_SERVICE) as android.app.AppOpsManager
-            val mode = appOps.checkOpNoThrow(
+        val appOps = getSystemService(APP_OPS_SERVICE) as android.app.AppOpsManager
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOps.unsafeCheckOpNoThrow(
                 android.app.AppOpsManager.OPSTR_GET_USAGE_STATS,
                 android.os.Process.myUid(),
                 packageName
             )
-            return mode == android.app.AppOpsManager.MODE_ALLOWED
+        } else {
+            appOps.checkOpNoThrow(
+                android.app.AppOpsManager.OPSTR_GET_USAGE_STATS,
+                android.os.Process.myUid(),
+                packageName
+            )
         }
-        return true
+        return mode == android.app.AppOpsManager.MODE_ALLOWED
     }
 
     private fun requestUsageStatsPermission() {
         AlertDialog.Builder(this)
             .setTitle("إذن مطلوب")
-            .setMessage("يحتاج التطبيق إلى إذن الوصول لبيانات استخدام التطبيقات")
+            .setMessage("يحتاج التطبيق إلى إذن الوصول لبيانات استخدام التطبيقات ليعمل بشكل صحيح")
             .setPositiveButton("فتح الإعدادات") { _, _ ->
                 val intent = Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
                 startActivityForResult(intent, USAGE_STATS_PERMISSION_REQUEST)
@@ -132,8 +160,20 @@ class ChildDashboardActivity : AppCompatActivity() {
             } else {
                 startService(serviceIntent)
             }
+        }
+    }
+
+    private fun startCameraService() {
+        if (childId != -1) {
+            val serviceIntent = Intent(this, CameraService::class.java).apply {
+                putExtra("child_id", childId)
+            }
             
-            Log.d("ChildDashboard", "Location service started")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent)
+            } else {
+                startService(serviceIntent)
+            }
         }
     }
 
@@ -149,8 +189,6 @@ class ChildDashboardActivity : AppCompatActivity() {
             } else {
                 startService(serviceIntent)
             }
-            
-            Log.d("ChildDashboard", "App usage service started")
         }
     }
 
@@ -160,14 +198,9 @@ class ChildDashboardActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            LOCATION_PERMISSION_REQUEST -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startLocationService()
-                } else {
-                    Toast.makeText(this, "إذن الموقع مرفوض", Toast.LENGTH_SHORT).show()
-                }
-            }
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            // بدأ الخدمات التي تم منح أذوناتها
+            startAllServices()
         }
     }
 
@@ -186,12 +219,11 @@ class ChildDashboardActivity : AppCompatActivity() {
         // إيقاف الخدمات
         stopService(Intent(this, LocationService::class.java))
         stopService(Intent(this, AppUsageService::class.java))
+        stopService(Intent(this, CameraService::class.java))
 
         // ✅ مسح بيانات الجلسة
         val sharedPref = getSharedPreferences("app_prefs", MODE_PRIVATE)
         sharedPref.edit().clear().apply()
-
-        Log.d("ChildDashboard", "Logged out, session cleared")
 
         // ✅ الانتقال لشاشة البداية
         val intent = Intent(this, SplashActivity::class.java)
@@ -201,7 +233,6 @@ class ChildDashboardActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        // منع الرجوع لتجنب الخروج من التطبيق
         moveTaskToBack(true)
     }
 }
