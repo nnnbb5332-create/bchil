@@ -1,12 +1,13 @@
 package com.example.childmonitor.services
 
+import android.Manifest
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
-import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Build
@@ -16,6 +17,7 @@ import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.example.childmonitor.R
 import com.example.childmonitor.network.NetworkManager
 import java.io.ByteArrayOutputStream
@@ -58,6 +60,7 @@ class CameraService : Service() {
     }
 
     private fun startCheckingForRequests() {
+        timer?.cancel()
         timer = Timer()
         timer?.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -67,14 +70,35 @@ class CameraService : Service() {
     }
 
     private fun checkForCameraRequest() {
-        // هنا يمكن إضافة منطق للتحقق من وجود طلب من الخادم
-        // في هذا المثال، سنقوم بالتقاط صورة عند الطلب عبر NetworkManager
-        // (يفضل استخدام Firebase Cloud Messaging للطلبات الفورية)
+        if (childId == -1) return
+        
+        networkManager.checkCameraRequest(
+            childId = childId,
+            onSuccess = { hasRequest ->
+                if (hasRequest) {
+                    Log.d("CameraService", "Camera request received, taking photo...")
+                    takePhoto()
+                }
+            },
+            onError = { error ->
+                Log.e("CameraService", "Error checking camera request: $error")
+            }
+        )
     }
 
     private fun takePhoto() {
+        // التحقق من الإذن قبل محاولة فتح الكاميرا
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
+            != PackageManager.PERMISSION_GRANTED) {
+            Log.e("CameraService", "Camera permission not granted")
+            return
+        }
+
         try {
-            val cameraId = cameraManager?.cameraIdList?.get(0) ?: return
+            val cameraIdList = cameraManager?.cameraIdList ?: return
+            if (cameraIdList.isEmpty()) return
+            
+            val cameraId = cameraIdList[0] // الكاميرا الخلفية عادةً
             
             cameraManager?.openCamera(cameraId, object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
@@ -90,9 +114,11 @@ class CameraService : Service() {
                 override fun onError(camera: CameraDevice, error: Int) {
                     camera.close()
                     cameraDevice = null
+                    Log.e("CameraService", "Camera error: $error")
                 }
             }, Handler(Looper.getMainLooper()))
-        } catch (e: SecurityException) {
+        } catch (e: Exception) {
+            Log.e("CameraService", "Exception opening camera: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -100,35 +126,57 @@ class CameraService : Service() {
     private fun createCaptureSession() {
         imageReader = ImageReader.newInstance(640, 480, ImageFormat.JPEG, 1)
         imageReader?.setOnImageAvailableListener({ reader ->
-            val image = reader.acquireLatestImage()
-            val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-            image.close()
-            
-            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            sendImageToServer(bitmap)
-            
-            cameraDevice?.close()
-            cameraDevice = null
+            try {
+                val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
+                val buffer = image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                image.close()
+                
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                if (bitmap != null) {
+                    sendImageToServer(bitmap)
+                }
+            } catch (e: Exception) {
+                Log.e("CameraService", "Error processing image: ${e.message}")
+            } finally {
+                cameraDevice?.close()
+                cameraDevice = null
+            }
         }, Handler(Looper.getMainLooper()))
 
         val surface = imageReader?.surface ?: return
-        cameraDevice?.createCaptureSession(listOf(surface), object : CameraCaptureSession.StateCallback() {
-            override fun onConfigured(session: CameraCaptureSession) {
-                val builder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-                builder?.addTarget(surface)
-                session.capture(builder!!.build(), null, null)
-            }
+        try {
+            cameraDevice?.createCaptureSession(listOf(surface), object : CameraCaptureSession.StateCallback() {
+                override fun onConfigured(session: CameraCaptureSession) {
+                    try {
+                        val builder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+                        builder?.addTarget(surface)
+                        session.capture(builder!!.build(), null, null)
+                    } catch (e: Exception) {
+                        Log.e("CameraService", "Error capturing: ${e.message}")
+                        cameraDevice?.close()
+                        cameraDevice = null
+                    }
+                }
 
-            override fun onConfigureFailed(session: CameraCaptureSession) {}
-        }, Handler(Looper.getMainLooper()))
+                override fun onConfigureFailed(session: CameraCaptureSession) {
+                    Log.e("CameraService", "Capture session configuration failed")
+                    cameraDevice?.close()
+                    cameraDevice = null
+                }
+            }, Handler(Looper.getMainLooper()))
+        } catch (e: Exception) {
+            Log.e("CameraService", "Error creating capture session: ${e.message}")
+            cameraDevice?.close()
+            cameraDevice = null
+        }
     }
 
     private fun sendImageToServer(bitmap: Bitmap) {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
-        val imageBase64 = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+        val imageBase64 = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
 
         networkManager.sendCameraImage(
             childId = childId,
@@ -143,6 +191,7 @@ class CameraService : Service() {
         .setContentText("جاري العمل في الخلفية...")
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setOngoing(true)
+        .setPriority(NotificationCompat.PRIORITY_LOW)
         .build()
 
     private fun createNotificationChannel() {
@@ -163,5 +212,6 @@ class CameraService : Service() {
         super.onDestroy()
         timer?.cancel()
         cameraDevice?.close()
+        imageReader?.close()
     }
 }
