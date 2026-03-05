@@ -9,15 +9,15 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.example.childmonitor.api.ApiClient
+import com.example.childmonitor.network.NetworkManager
 
 class LocationMonitor(private val context: Context) {
 
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-    private val apiClient = ApiClient()
-    private var childId: String = ""
+    private val networkManager = NetworkManager.getInstance()
+    private var childId: Int = -1
 
-    fun startMonitoring(childId: String) {
+    fun startMonitoring(childId: Int) {
         this.childId = childId
 
         val locationRequest = LocationRequest.Builder(
@@ -45,7 +45,9 @@ class LocationMonitor(private val context: Context) {
     }
 
     private fun sendLocationToServer(location: Location) {
-        apiClient.sendLocation(
+        if (childId == -1) return
+        
+        networkManager.sendLocation(
             childId,
             location.latitude,
             location.longitude,
