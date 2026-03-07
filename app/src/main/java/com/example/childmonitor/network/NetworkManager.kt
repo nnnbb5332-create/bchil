@@ -19,7 +19,8 @@ class NetworkManager {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    private val baseUrl = "https://3000-iv9kwo40euydbcxtan4zz-1826f61a.sg1.manus.computer/api/trpc"
+    // ✅ تم التحديث: استخدام Android API الجديد
+    private val baseUrl = "https://childmonitor-vdtumhvj.manus.space/api/android"
 
     /**
      * تسجيل حساب جديد للآباء
@@ -37,7 +38,7 @@ class NetworkManager {
             put("name", name)
         }
 
-        sendPostRequest("parent.register", json, onSuccess, onError)
+        sendPostRequest("parent/register", json, onSuccess, onError)
     }
 
     /**
@@ -54,7 +55,7 @@ class NetworkManager {
             put("password", password)
         }
 
-        sendPostRequest("parent.login", json, onSuccess, onError)
+        sendPostRequest("parent/login", json, onSuccess, onError)
     }
 
     /**
@@ -73,7 +74,7 @@ class NetworkManager {
             put("password", password)
         }
 
-        sendPostRequest("parent.addChild", json, onSuccess, onError)
+        sendPostRequest("parent/addChild", json, onSuccess, onError)
     }
 
     /**
@@ -88,7 +89,7 @@ class NetworkManager {
             put("parentId", parentId)
         }
 
-        sendGetRequestForArray("parent.getChildren", json, onSuccess, onError)
+        sendGetRequestForArray("parent/getChildren", json, onSuccess, onError)
     }
 
     /**
@@ -103,7 +104,7 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendPostRequest("parent.deleteChild", json, onSuccess, onError)
+        sendPostRequest("parent/deleteChild", json, onSuccess, onError)
     }
 
     /**
@@ -120,7 +121,7 @@ class NetworkManager {
             put("password", password)
         }
 
-        sendPostRequest("child.login", json, onSuccess, onError)
+        sendPostRequest("child/login", json, onSuccess, onError)
     }
 
     /**
@@ -143,7 +144,7 @@ class NetworkManager {
             }
         }
 
-        sendPostRequest("child.sendLocation", json, onSuccess, onError)
+        sendPostRequest("child/sendLocation", json, onSuccess, onError)
     }
 
     /**
@@ -164,7 +165,7 @@ class NetworkManager {
             put("usageTime", usageTime)
         }
 
-        sendPostRequest("child.sendAppUsage", json, onSuccess, onError)
+        sendPostRequest("child/sendAppUsage", json, onSuccess, onError)
     }
 
     /**
@@ -181,7 +182,7 @@ class NetworkManager {
             put("image", imageBase64)
         }
 
-        sendPostRequest("child.sendCameraImage", json, onSuccess, onError)
+        sendPostRequest("child/sendCameraImage", json, onSuccess, onError)
     }
 
     /**
@@ -196,7 +197,7 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendGetRequest("child.checkCameraRequest", json, { response ->
+        sendGetRequest("child/checkCameraRequest", json, { response ->
             val hasRequest = response.optBoolean("hasRequest", false)
             onSuccess(hasRequest)
         }, onError)
@@ -214,7 +215,7 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendPostRequest("parent.requestCameraImage", json, onSuccess, onError)
+        sendPostRequest("parent/requestCameraImage", json, onSuccess, onError)
     }
 
     /**
@@ -229,7 +230,7 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendGetRequest("parent.getLatestCameraImage", json, onSuccess, onError)
+        sendGetRequest("parent/getLatestCameraImage", json, onSuccess, onError)
     }
 
     /**
@@ -244,7 +245,7 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendGetRequest("parent.getLatestLocation", json, onSuccess, onError)
+        sendGetRequest("parent/getLatestLocation", json, onSuccess, onError)
     }
 
     /**
@@ -261,7 +262,7 @@ class NetworkManager {
             put("limit", limit)
         }
 
-        sendGetRequestForArray("parent.getChildLocations", json, onSuccess, onError)
+        sendGetRequestForArray("parent/getChildLocations", json, onSuccess, onError)
     }
 
     /**
@@ -278,11 +279,12 @@ class NetworkManager {
             put("limit", limit)
         }
 
-        sendGetRequestForArray("parent.getChildAppUsage", json, onSuccess, onError)
+        sendGetRequestForArray("parent/getChildAppUsage", json, onSuccess, onError)
     }
 
     /**
      * إرسال طلب POST (Mutations)
+     * ✅ تم التحديث: إرسال البيانات مباشرة بدون wrapper
      */
     private fun sendPostRequest(
         procedure: String,
@@ -290,9 +292,8 @@ class NetworkManager {
         onSuccess: (JSONObject) -> Unit,
         onError: (String) -> Unit
     ) {
-        val requestBody = JSONObject().apply {
-            put("json", data)
-        }.toString().toRequestBody("application/json".toMediaType())
+        // ✅ التغيير: إرسال البيانات مباشرة بدون "json" wrapper
+        val requestBody = data.toString().toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
             .url("$baseUrl/$procedure")
@@ -305,6 +306,7 @@ class NetworkManager {
 
     /**
      * إرسال طلب GET (Queries)
+     * ✅ تم التحديث: إرسال البيانات في query string بدون wrapper
      */
     private fun sendGetRequest(
         procedure: String,
@@ -312,9 +314,8 @@ class NetworkManager {
         onSuccess: (JSONObject) -> Unit,
         onError: (String) -> Unit
     ) {
-        val inputJson = JSONObject().apply {
-            put("json", data)
-        }.toString()
+        // ✅ التغيير: إرسال البيانات مباشرة بدون "json" wrapper
+        val inputJson = data.toString()
         
         val url = "$baseUrl/$procedure?input=${URLEncoder.encode(inputJson, "UTF-8")}"
 
@@ -329,6 +330,7 @@ class NetworkManager {
 
     /**
      * إرسال طلب GET يُرجع مصفوفة
+     * ✅ تم التحديث: إرسال البيانات في query string بدون wrapper
      */
     private fun sendGetRequestForArray(
         procedure: String,
@@ -336,9 +338,8 @@ class NetworkManager {
         onSuccess: (JSONArray) -> Unit,
         onError: (String) -> Unit
     ) {
-        val inputJson = JSONObject().apply {
-            put("json", data)
-        }.toString()
+        // ✅ التغيير: إرسال البيانات مباشرة بدون "json" wrapper
+        val inputJson = data.toString()
         
         val url = "$baseUrl/$procedure?input=${URLEncoder.encode(inputJson, "UTF-8")}"
 
@@ -371,28 +372,42 @@ class NetworkManager {
                         try {
                             val jsonResponse = JSONObject(body)
                             
-                            if (jsonResponse.has("result")) {
-                                val result = jsonResponse.getJSONObject("result")
-                                val dataObj = result.getJSONObject("data")
-                                val jsonData = dataObj.getJSONObject("json")
-                                onSuccess(jsonData)
-                            } else if (jsonResponse.has("error")) {
-                                val error = jsonResponse.getJSONObject("error")
-                                val message = error.getJSONObject("json").optString("message", "حدث خطأ غير معروف")
-                                onError(message)
+                            // ✅ التغيير: التحقق من الاستجابة الجديدة
+                            if (jsonResponse.has("error") && jsonResponse.get("error") != null && jsonResponse.get("error") != JSONObject.NULL) {
+                                val errorMessage = jsonResponse.getString("error")
+                                Log.e("NetworkManager", "Error: $errorMessage")
+                                onError(errorMessage)
+                            } else if (jsonResponse.has("data")) {
+                                val data = jsonResponse.getJSONObject("data")
+                                Log.d("NetworkManager", "Success: $data")
+                                onSuccess(data)
                             } else {
-                                onSuccess(JSONObject()) // استجابة فارغة ناجحة
+                                onError("استجابة غير متوقعة من الخادم")
                             }
                         } catch (e: Exception) {
-                            Log.e("NetworkManager", "Error parsing success response", e)
+                            Log.e("NetworkManager", "Error parsing response", e)
                             onError("خطأ في معالجة الاستجابة: ${e.message}")
                         }
                     } else {
-                        handleErrorResponse(body, response.code, onError)
+                        val errorBody = response.body?.string() ?: ""
+                        Log.e("NetworkManager", "Request failed with code: ${response.code}")
+                        Log.e("NetworkManager", "Error body: $errorBody")
+                        
+                        try {
+                            val errorJson = JSONObject(errorBody)
+                            if (errorJson.has("error")) {
+                                val errorMessage = errorJson.getString("error")
+                                onError(errorMessage)
+                            } else {
+                                onError("فشل الطلب: ${response.code}")
+                            }
+                        } catch (e: Exception) {
+                            onError("فشل الطلب: ${response.code}")
+                        }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("NetworkManager", "Network exception", e)
+                Log.e("NetworkManager", "Exception during request", e)
                 onError("خطأ في الاتصال: ${e.message}")
             }
         }.start()
@@ -418,46 +433,45 @@ class NetworkManager {
                         try {
                             val jsonResponse = JSONObject(body)
                             
-                            if (jsonResponse.has("result")) {
-                                val result = jsonResponse.getJSONObject("result")
-                                val dataObj = result.getJSONObject("data")
-                                val jsonArray = dataObj.getJSONArray("json")
-                                onSuccess(jsonArray)
-                            } else if (jsonResponse.has("error")) {
-                                val error = jsonResponse.getJSONObject("error")
-                                val message = error.getJSONObject("json").optString("message", "حدث خطأ غير معروف")
-                                onError(message)
+                            // ✅ التغيير: التحقق من الاستجابة الجديدة
+                            if (jsonResponse.has("error") && jsonResponse.get("error") != null && jsonResponse.get("error") != JSONObject.NULL) {
+                                val errorMessage = jsonResponse.getString("error")
+                                Log.e("NetworkManager", "Error: $errorMessage")
+                                onError(errorMessage)
+                            } else if (jsonResponse.has("data")) {
+                                val dataArray = jsonResponse.getJSONArray("data")
+                                Log.d("NetworkManager", "Success: $dataArray")
+                                onSuccess(dataArray)
                             } else {
-                                onError("صيغة الاستجابة غير صحيحة")
+                                onError("استجابة غير متوقعة من الخادم")
                             }
                         } catch (e: Exception) {
-                            Log.e("NetworkManager", "Error parsing array response", e)
+                            Log.e("NetworkManager", "Error parsing response", e)
                             onError("خطأ في معالجة الاستجابة: ${e.message}")
                         }
                     } else {
-                        handleErrorResponse(body, response.code, onError)
+                        val errorBody = response.body?.string() ?: ""
+                        Log.e("NetworkManager", "Request failed with code: ${response.code}")
+                        Log.e("NetworkManager", "Error body: $errorBody")
+                        
+                        try {
+                            val errorJson = JSONObject(errorBody)
+                            if (errorJson.has("error")) {
+                                val errorMessage = errorJson.getString("error")
+                                onError(errorMessage)
+                            } else {
+                                onError("فشل الطلب: ${response.code}")
+                            }
+                        } catch (e: Exception) {
+                            onError("فشل الطلب: ${response.code}")
+                        }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("NetworkManager", "Network exception", e)
+                Log.e("NetworkManager", "Exception during request", e)
                 onError("خطأ في الاتصال: ${e.message}")
             }
         }.start()
-    }
-
-    private fun handleErrorResponse(body: String, code: Int, onError: (String) -> Unit) {
-        try {
-            val errorJson = JSONObject(body)
-            if (errorJson.has("error")) {
-                val error = errorJson.getJSONObject("error")
-                val message = error.getJSONObject("json").optString("message", "فشل الطلب")
-                onError(message)
-            } else {
-                onError("فشل الطلب: $code")
-            }
-        } catch (e: Exception) {
-            onError("فشل الطلب: $code")
-        }
     }
 
     companion object {
