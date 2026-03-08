@@ -343,19 +343,38 @@ class NetworkManager {
 
                     if (response.isSuccessful) {
                         try {
+                            // التحقق مما إذا كانت الاستجابة تبدأ بـ HTML
+                            if (body.trim().startsWith("<!doctype", ignoreCase = true) || body.trim().startsWith("<html", ignoreCase = true)) {
+                                Log.e("NetworkManager", "Received HTML instead of JSON: $body")
+                                onError("خطأ في السيرفر: استلم التطبيق صفحة HTML بدلاً من بيانات JSON. يرجى التأكد من صحة رابط السيرفر.")
+                                return@Thread
+                            }
+
                             val jsonResponse = JSONObject(body)
                             
-                            // ✅ التغيير: التحقق من الاستجابة الجديدة
+                            // التحقق من وجود خطأ في الـ JSON
                             if (jsonResponse.has("error") && jsonResponse.get("error") != null && jsonResponse.get("error") != JSONObject.NULL) {
-                                val errorMessage = jsonResponse.getString("error")
+                                val errorObj = jsonResponse.get("error")
+                                val errorMessage = if (errorObj is JSONObject) {
+                                    errorObj.optString("message", "خطأ غير معروف")
+                                } else {
+                                    errorObj.toString()
+                                }
                                 Log.e("NetworkManager", "Error: $errorMessage")
                                 onError(errorMessage)
                             } else if (jsonResponse.has("data")) {
-                                val data = jsonResponse.getJSONObject("data")
-                                Log.d("NetworkManager", "Success: $data")
-                                onSuccess(data)
+                                val data = jsonResponse.get("data")
+                                if (data is JSONObject) {
+                                    Log.d("NetworkManager", "Success: $data")
+                                    onSuccess(data)
+                                } else {
+                                    // إذا كانت البيانات ليست كائناً (مثلاً Boolean أو String)، نضعها في كائن جديد
+                                    val wrapper = JSONObject().put("result", data)
+                                    onSuccess(wrapper)
+                                }
                             } else {
-                                onError("استجابة غير متوقعة من الخادم")
+                                // إذا لم يكن هناك data ولا error، قد تكون البيانات هي الـ JSON نفسه
+                                onSuccess(jsonResponse)
                             }
                         } catch (e: Exception) {
                             Log.e("NetworkManager", "Error parsing response", e)
@@ -404,17 +423,32 @@ class NetworkManager {
 
                     if (response.isSuccessful) {
                         try {
+                            // التحقق مما إذا كانت الاستجابة تبدأ بـ HTML
+                            if (body.trim().startsWith("<!doctype", ignoreCase = true) || body.trim().startsWith("<html", ignoreCase = true)) {
+                                Log.e("NetworkManager", "Received HTML instead of JSON: $body")
+                                onError("خطأ في السيرفر: استلم التطبيق صفحة HTML بدلاً من بيانات JSON.")
+                                return@Thread
+                            }
+
                             val jsonResponse = JSONObject(body)
                             
-                            // ✅ التغيير: التحقق من الاستجابة الجديدة
                             if (jsonResponse.has("error") && jsonResponse.get("error") != null && jsonResponse.get("error") != JSONObject.NULL) {
-                                val errorMessage = jsonResponse.getString("error")
+                                val errorObj = jsonResponse.get("error")
+                                val errorMessage = if (errorObj is JSONObject) {
+                                    errorObj.optString("message", "خطأ غير معروف")
+                                } else {
+                                    errorObj.toString()
+                                }
                                 Log.e("NetworkManager", "Error: $errorMessage")
                                 onError(errorMessage)
                             } else if (jsonResponse.has("data")) {
-                                val dataArray = jsonResponse.getJSONArray("data")
-                                Log.d("NetworkManager", "Success: $dataArray")
-                                onSuccess(dataArray)
+                                val data = jsonResponse.get("data")
+                                if (data is JSONArray) {
+                                    Log.d("NetworkManager", "Success: $data")
+                                    onSuccess(data)
+                                } else {
+                                    onError("البيانات المستلمة ليست مصفوفة")
+                                }
                             } else {
                                 onError("استجابة غير متوقعة من الخادم")
                             }
