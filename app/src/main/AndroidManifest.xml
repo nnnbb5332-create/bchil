@@ -86,17 +86,20 @@
         <!-- إضافة طفل -->
         <activity
             android:name=".activities.AddChildActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.ChildMonitor.NoActionBar" />
 
         <!-- عرض موقع الطفل -->
         <activity
             android:name=".activities.ChildLocationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.ChildMonitor.NoActionBar" />
 
         <!-- عرض كاميرا الطفل -->
         <activity
             android:name=".activities.ChildCameraActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.ChildMonitor.NoActionBar" />
 
         <!-- خدمة الموقع -->
         <service
