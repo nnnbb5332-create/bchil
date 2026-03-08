@@ -29,7 +29,8 @@ class ChildLocationActivity : AppCompatActivity() {
             return
         }
 
-        title = "موقع $childName"
+        // تم إزالة ضبط العنوان التلقائي لتجنب التعارض مع ActionBar
+        // title = "موقع $childName"
 
         binding.childNameText.text = "الطفل: $childName"
 
