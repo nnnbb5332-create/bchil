@@ -29,10 +29,10 @@ class ChildCameraActivity : AppCompatActivity() {
             childName = intent.getStringExtra("child_name") ?: "الطفل"
 
             // إعداد Toolbar
-            setSupportActionBar(binding.toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = "كاميرا $childName"
-
+            // تم إزالة setSupportActionBar لتجنب التعارض مع ActionBar الموجود في الثيم
+            // بدلاً من ذلك، سنستخدم Toolbar كـ View عادي أو نغير الثيم
+            binding.toolbar.title = "كاميرا $childName"
+            binding.toolbar.setNavigationIcon(com.example.childmonitor.R.drawable.ic_back)
             binding.toolbar.setNavigationOnClickListener {
                 finish()
             }
