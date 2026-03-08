@@ -78,7 +78,7 @@ class NetworkManager {
     }
 
     /**
-     * الحصول على قائمة الأطفال (Query - GET)
+     * الحصول على قائمة الأطفال
      */
     fun getChildren(
         parentId: Int,
@@ -89,7 +89,7 @@ class NetworkManager {
             put("parentId", parentId)
         }
 
-        sendGetRequestForArray("parent/getChildren", json, onSuccess, onError)
+        sendPostRequestForArray("parent/getChildren", json, onSuccess, onError)
     }
 
     /**
@@ -197,7 +197,7 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendGetRequest("child/checkCameraRequest", json, { response ->
+        sendPostRequest("child/checkCameraRequest", json, { response ->
             val hasRequest = response.optBoolean("hasRequest", false)
             onSuccess(hasRequest)
         }, onError)
@@ -230,11 +230,11 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendGetRequest("parent/getLatestCameraImage", json, onSuccess, onError)
+        sendPostRequest("parent/getLatestCameraImage", json, onSuccess, onError)
     }
 
     /**
-     * الحصول على آخر موقع للطفل (Query - GET)
+     * الحصول على آخر موقع للطفل
      */
     fun getLatestLocation(
         childId: Int,
@@ -245,11 +245,11 @@ class NetworkManager {
             put("childId", childId)
         }
 
-        sendGetRequest("parent/getLatestLocation", json, onSuccess, onError)
+        sendPostRequest("parent/getLatestLocation", json, onSuccess, onError)
     }
 
     /**
-     * الحصول على سجل المواقع (Query - GET)
+     * الحصول على سجل المواقع
      */
     fun getChildLocations(
         childId: Int,
@@ -262,11 +262,11 @@ class NetworkManager {
             put("limit", limit)
         }
 
-        sendGetRequestForArray("parent/getChildLocations", json, onSuccess, onError)
+        sendPostRequestForArray("parent/getChildLocations", json, onSuccess, onError)
     }
 
     /**
-     * الحصول على سجل استخدام التطبيقات (Query - GET)
+     * الحصول على سجل استخدام التطبيقات
      */
     fun getChildAppUsage(
         childId: Int,
@@ -279,7 +279,7 @@ class NetworkManager {
             put("limit", limit)
         }
 
-        sendGetRequestForArray("parent/getChildAppUsage", json, onSuccess, onError)
+        sendPostRequestForArray("parent/getChildAppUsage", json, onSuccess, onError)
     }
 
     /**
@@ -305,47 +305,20 @@ class NetworkManager {
     }
 
     /**
-     * إرسال طلب GET (Queries)
-     * ✅ تم التحديث: إرسال البيانات في query string بدون wrapper
+     * إرسال طلب POST يُرجع مصفوفة
      */
-    private fun sendGetRequest(
-        procedure: String,
-        data: JSONObject,
-        onSuccess: (JSONObject) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        // ✅ التغيير: إرسال البيانات مباشرة بدون "json" wrapper
-        val inputJson = data.toString()
-        
-        val url = "$baseUrl/$procedure?input=${URLEncoder.encode(inputJson, "UTF-8")}"
-
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .addHeader("Content-Type", "application/json")
-            .build()
-
-        executeRequest(request, onSuccess, onError)
-    }
-
-    /**
-     * إرسال طلب GET يُرجع مصفوفة
-     * ✅ تم التحديث: إرسال البيانات في query string بدون wrapper
-     */
-    private fun sendGetRequestForArray(
+    private fun sendPostRequestForArray(
         procedure: String,
         data: JSONObject,
         onSuccess: (JSONArray) -> Unit,
         onError: (String) -> Unit
     ) {
         // ✅ التغيير: إرسال البيانات مباشرة بدون "json" wrapper
-        val inputJson = data.toString()
-        
-        val url = "$baseUrl/$procedure?input=${URLEncoder.encode(inputJson, "UTF-8")}"
+        val requestBody = data.toString().toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url(url)
-            .get()
+            .url("$baseUrl/$procedure")
+            .post(requestBody)
             .addHeader("Content-Type", "application/json")
             .build()
 
